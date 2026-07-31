@@ -1,0 +1,29 @@
+.states
+assets/external/
+*.db
+.web
+__pycache__/
+*.py[cod]
+
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# IDE / Editor configuration
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Environment variables / Secret files
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
