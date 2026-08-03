@@ -1,29 +1,18 @@
-.states
-assets/external/
-*.db
-.web
+# Python & Virtualenv
 __pycache__/
 *.py[cod]
-
-# Virtual Environment
+*$py.class
 venv/
 .venv/
-env/
-ENV/
+*.db
+backend/nhamay.db
 
-# IDE / Editor configuration
+# Frontend Node & Vite
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+
+# IDE & System
+.DS_Store
 .vscode/
 .idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.swp
-
-# Environment variables / Secret files
-.env
-.env.*
-
-# OS files
-.DS_Store
-Thumbs.db
