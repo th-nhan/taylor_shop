@@ -32,7 +32,7 @@ export default function Header({ currentUser, onOpenAuth, onLogout }) {
               className="hidden md:flex items-center space-x-2 text-sm text-slate-300 hover:text-amber-400 transition-colors"
             >
               <PhoneCall className="w-4 h-4 text-amber-400" />
-              <span>Hotline: 0909.123.456</span>
+              <span>Hotline: 0901.370.622</span>
             </a>
 
             <div className="h-6 w-px bg-indigo-800/80 hidden md:block"></div>

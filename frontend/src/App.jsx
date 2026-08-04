@@ -159,7 +159,7 @@ export default function App() {
       <footer className="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800 mt-12">
         <div className="max-w-7xl mx-auto px-4 text-center space-y-2">
           <p className="font-semibold text-slate-300">NHÀ MAY THÚY DIỄM © 2026 - May Đo & Tư Vấn Kiểu Dáng Chuyên Nghiệp</p>
-          <p className="text-slate-500">Địa chỉ: 123 Đường May Tinh Tế, Quận 1, TP. Hồ Chí Minh • Hotline: 0909.123.456</p>
+          <p className="text-slate-500">Địa chỉ: 676, đường 3 bông, xã Phước Lý, tỉnh Tây Ninh • Hotline: 0901.370.622</p>
         </div>
       </footer>
 
