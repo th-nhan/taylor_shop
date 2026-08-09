@@ -78,7 +78,7 @@ nha_may_app/
 2. Tạo và kích hoạt môi trường ảo (tùy chọn nhưng khuyến khích):
    - **Windows**:
      ```bash
-     python -m venv venv
+     py -m venv venv
      .\venv\Scripts\activate
      ```
    - **macOS/Linux**:
