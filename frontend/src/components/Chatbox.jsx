@@ -72,11 +72,11 @@ export default function Chatbox({ currentUser, prefillMessage }) {
   ];
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end">
+    <div className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-50 flex flex-col items-end">
       
       {/* Expanded Chat Window */}
       {isOpen && (
-        <div className="mb-4 w-[360px] sm:w-[400px] h-[520px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-slideUp">
+        <div className="fixed inset-0 sm:absolute sm:inset-auto sm:bottom-full sm:right-0 sm:mb-4 w-full sm:w-[400px] h-full sm:h-[520px] bg-white rounded-none sm:rounded-2xl shadow-2xl border border-slate-200/80 flex flex-col overflow-hidden animate-slideUp">
           
           {/* Header */}
           <div className="bg-luxury-navy text-white p-4 flex items-center justify-between shadow-md">
@@ -193,7 +193,7 @@ export default function Chatbox({ currentUser, prefillMessage }) {
           <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-slate-900"></span>
         </div>
         <span className="text-xs font-bold tracking-wide group-hover:text-amber-300 transition-colors">
-          Tư Vấn AI Thúy Diễm
+          Tư Vấn
         </span>
       </button>
 

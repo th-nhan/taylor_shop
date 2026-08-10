@@ -53,8 +53,8 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-sm animate-fadeIn">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 max-h-[95vh] overflow-y-auto">
         
         {/* Modal Header */}
         <div className="bg-luxury-navy text-white px-6 py-5 flex items-center justify-between relative">

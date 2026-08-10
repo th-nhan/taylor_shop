@@ -47,29 +47,29 @@ export default function App() {
       />
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-10">
         
         {/* Banner Hero Section */}
-        <section className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-luxury-navy via-indigo-950 to-slate-900 text-white p-8 sm:p-12 shadow-2xl border border-indigo-900/40">
+        <section className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-gradient-to-r from-luxury-navy via-indigo-950 to-slate-900 text-white p-6 sm:p-12 shadow-2xl border border-indigo-900/40">
           <div className="relative z-10 max-w-2xl space-y-4">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full text-amber-300 text-xs font-semibold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center space-x-2 px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full text-amber-300 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">
+              <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               <span>Tiệm May Đo Thiết Kế Tận Tâm</span>
             </div>
 
-            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-5xl font-extrabold tracking-tight leading-tight">
               Tôn Vinh Vóc Dáng <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">
                 Qua Mỗi Đường Kim
               </span>
             </h2>
 
-            <p className="text-sm sm:text-base text-slate-300 font-light leading-relaxed">
-              Nhà May Thúy Diễm chuyên tư vấn kiểu dáng, chọn vải chuẩn phom và may đo theo số đo độc quyền cho từng khách hàng. Hỗ trợ trợ lý AI gợi ý mẫu mã phù hợp 24/7.
+            <p className="text-xs sm:text-base text-slate-300 font-light leading-relaxed">
+              Nhà May Thúy Diễm chuyên tư vấn kiểu dáng, chọn vải chuẩn phom và may đo theo số đo độc quyền cho từng khách hàng. Hỗ trợ trợ lý ảo gợi ý mẫu mã phù hợp 24/7.
             </p>
 
             {/* Commitments Bar */}
-            <div className="pt-4 grid grid-cols-3 gap-3 text-xs border-t border-indigo-800/60 text-slate-300">
+            <div className="pt-4 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 text-xs border-t border-indigo-800/60 text-slate-300">
               <div className="flex items-center space-x-2">
                 <Ruler className="w-4 h-4 text-amber-400 flex-shrink-0" />
                 <span>Chuẩn số đo 100%</span>
@@ -80,7 +80,7 @@ export default function App() {
               </div>
               <div className="flex items-center space-x-2">
                 <Clock className="w-4 h-4 text-amber-400 flex-shrink-0" />
-                <span>Giao hàng tận nơi</span>
+                <span>Đồ may hoàn thành đúng hẹn</span>
               </div>
             </div>
           </div>
@@ -95,7 +95,7 @@ export default function App() {
           {/* Section Header & Category Filters */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
             <div>
-              <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
                 Bộ Sưu Tập Mẫu Đồ
                 <span className="text-xs font-normal text-slate-500 bg-slate-200/70 px-2.5 py-0.5 rounded-full">
                   {products.length} mẫu
@@ -107,7 +107,7 @@ export default function App() {
             </div>
 
             {/* Filter Buttons */}
-            <div className="flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-none">
+            <div className="flex items-center space-x-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none w-[calc(100%+2rem)] sm:w-auto">
               <Filter className="w-4 h-4 text-slate-400 hidden sm:block mr-1" />
               {CATEGORIES.map((cat) => {
                 const isActive = selectedCategory === cat;

@@ -12,7 +12,7 @@ export default function ProductCard({ product, onSelectForConsult }) {
     <div className="group bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full hover:-translate-y-1">
       
       {/* Product Image Section */}
-      <div className="relative h-64 overflow-hidden bg-slate-100">
+      <div className="relative h-48 sm:h-64 overflow-hidden bg-slate-100">
         <img
           src={imageUrl}
           alt={name}
@@ -32,14 +32,14 @@ export default function ProductCard({ product, onSelectForConsult }) {
 
         {/* Name overlay */}
         <div className="absolute bottom-3 left-3 right-3 text-white">
-          <h3 className="text-lg font-bold drop-shadow-md leading-tight group-hover:text-amber-300 transition-colors">
+          <h3 className="text-base sm:text-lg font-bold drop-shadow-md leading-tight group-hover:text-amber-300 transition-colors">
             {name}
           </h3>
         </div>
       </div>
 
       {/* Product Details Section */}
-      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+      <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-4">
         
         <div>
           <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed mb-3">
