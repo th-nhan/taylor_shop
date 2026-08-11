@@ -55,7 +55,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-sm animate-fadeIn">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 max-h-[95vh] overflow-y-auto">
-        
+
         {/* Modal Header */}
         <div className="bg-luxury-navy text-white px-6 py-5 flex items-center justify-between relative">
           <div>
@@ -66,7 +66,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
               {isRegister ? 'Tạo tài khoản để lưu số đo & lịch sử may' : 'Chào mừng bạn quay lại với Nhà May Thúy Diễm'}
             </p>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
           >

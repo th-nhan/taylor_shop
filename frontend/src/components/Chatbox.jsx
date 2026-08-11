@@ -73,11 +73,11 @@ export default function Chatbox({ currentUser, prefillMessage }) {
 
   return (
     <div className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-50 flex flex-col items-end">
-      
+
       {/* Expanded Chat Window */}
       {isOpen && (
         <div className="fixed inset-0 sm:absolute sm:inset-auto sm:bottom-full sm:right-0 sm:mb-4 w-full sm:w-[400px] h-full sm:h-[520px] bg-white rounded-none sm:rounded-2xl shadow-2xl border border-slate-200/80 flex flex-col overflow-hidden animate-slideUp">
-          
+
           {/* Header */}
           <div className="bg-luxury-navy text-white p-4 flex items-center justify-between shadow-md">
             <div className="flex items-center space-x-3">
@@ -111,22 +111,20 @@ export default function Chatbox({ currentUser, prefillMessage }) {
                   className={`flex items-start gap-2.5 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
                 >
                   <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-sm ${
-                      isUser
+                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-sm ${isUser
                         ? 'bg-indigo-600 text-white'
                         : 'bg-amber-500 text-slate-950'
-                    }`}
+                      }`}
                   >
                     {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                   </div>
 
                   <div className={`max-w-[78%] group`}>
                     <div
-                      className={`p-3 rounded-2xl text-xs leading-relaxed shadow-sm ${
-                        isUser
+                      className={`p-3 rounded-2xl text-xs leading-relaxed shadow-sm ${isUser
                           ? 'bg-indigo-600 text-white rounded-tr-none'
                           : 'bg-white text-slate-800 border border-slate-200/80 rounded-tl-none'
-                      }`}
+                        }`}
                     >
                       {msg.text}
                     </div>

@@ -6,7 +6,7 @@ export default function Header({ currentUser, onOpenAuth, onLogout }) {
     <header className="sticky top-0 z-40 bg-luxury-navy text-white shadow-lg border-b border-indigo-900/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
-          
+
           {/* Logo & Brand Name */}
           <div className="flex items-center space-x-2 sm:space-x-3 cursor-pointer">
             <div className="p-1.5 sm:p-2.5 bg-gradient-to-tr from-amber-600 to-amber-400 rounded-xl shadow-md text-slate-950">
@@ -24,8 +24,8 @@ export default function Header({ currentUser, onOpenAuth, onLogout }) {
 
           {/* Contact & User Action */}
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <a 
-              href="tel:0901370622" 
+            <a
+              href="tel:0901370622"
               className="hidden md:flex items-center space-x-2 text-sm text-slate-300 hover:text-amber-400 transition-colors"
             >
               <PhoneCall className="w-4 h-4 text-amber-400" />
