@@ -88,8 +88,14 @@ export default function ProductDetailModal({ product, onClose, onConsult }) {
   return (
     <>
       {/* Product Detail Modal */}
-      <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-0 sm:p-4 animate-fadeIn">
-        <div className="bg-luxury-bg w-full max-w-2xl h-full sm:h-auto sm:max-h-[90vh] sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-red-950/20">
+      <div 
+        onClick={onClose}
+        className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-0 sm:p-4 animate-fadeIn"
+      >
+        <div 
+          onClick={(e) => e.stopPropagation()}
+          className="bg-luxury-bg w-full max-w-2xl h-full sm:h-auto sm:max-h-[90vh] sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-red-950/20"
+        >
           
           {/* Header Navigation */}
           <div className="sticky top-0 z-10 bg-luxury-navy text-white px-4 py-3 flex items-center border-b border-red-950/50 shadow-sm">
