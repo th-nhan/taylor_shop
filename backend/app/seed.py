@@ -1,6 +1,6 @@
 import os
 from sqlmodel import SQLModel, create_engine, Session, select
-from app.models import Product
+from app.models import Product, User
 
 # Đường dẫn DB mặc định
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./nhamay.db")
@@ -10,6 +10,19 @@ def seed_data():
     SQLModel.metadata.create_all(engine)
     
     with Session(engine) as session:
+        # Seed Admin User if not exists
+        existing_admin = session.exec(select(User).where(User.phone == "0999999999")).first()
+        if not existing_admin:
+            admin_user = User(
+                full_name="Quản trị viên",
+                phone="0999999999",
+                password_hash="admin123",
+                role="admin"
+            )
+            session.add(admin_user)
+            session.commit()
+            print("[SUCCESS] Da tu dong khoi tao tai khoan Admin mac dinh!")
+
         existing_product = session.exec(select(Product)).first()
         if existing_product:
             print("[INFO] CSDL da co du lieu san pham.")
@@ -18,7 +31,7 @@ def seed_data():
         sample_products = [
             Product(
                 name="Đầm Xòe Cổ Đổ Dạ Hội",
-                category="Đầm",
+                categories=["Đầm"],
                 target_gender="Nữ",
                 price_estimate="450.000đ - 650.000đ",
                 description="Phong cách sang trọng, tôn dáng, phù hợp dự tiệc hoặc sự kiện đặc biệt.",
@@ -33,7 +46,7 @@ def seed_data():
             ),
             Product(
                 name="Đầm Suông Lụa Cổ V Công Sở",
-                category="Đầm",
+                categories=["Đầm"],
                 target_gender="Nữ",
                 price_estimate="380.000đ - 500.000đ",
                 description="Thiết kế thoải mái, che khuyết điểm vòng 2 cực tốt, thanh lịch cho quý cô công sở.",
@@ -48,7 +61,7 @@ def seed_data():
             ),
             Product(
                 name="Quần Tây Nam 1 Ly Ống Đứng",
-                category="Quần tây",
+                categories=["Quần tây"],
                 target_gender="Nam",
                 price_estimate="320.000đ - 450.000đ",
                 description="Chuẩn phom công sở lịch lãm, co giãn nhẹ giúp di chuyển thoải mái cả ngày.",
@@ -63,7 +76,7 @@ def seed_data():
             ),
             Product(
                 name="Quần Tây Nữ Cạp Cao Ống Rộng",
-                category="Quần tây",
+                categories=["Quần tây"],
                 target_gender="Nữ",
                 price_estimate="290.000đ - 390.000đ",
                 description="Hack dáng kéo dài chân tối đa, kết hợp hoàn hảo với áo sơ mi hoặc croptop.",
@@ -78,7 +91,7 @@ def seed_data():
             ),
             Product(
                 name="Đồ Bộ Nữ Tay Phồng Cổ Vuông",
-                category="Đồ bộ",
+                categories=["Đồ bộ"],
                 target_gender="Nữ",
                 price_estimate="230.000đ - 300.000đ",
                 description="Bộ mặc nhà tiểu thư sang trọng, chất vải thoáng mát, may sắc nét từng đường kim mũi chỉ.",
@@ -92,7 +105,7 @@ def seed_data():
             ),
             Product(
                 name="Áo Sơ Mi Nam Tay Dài Slimfit",
-                category="Sơ mi",
+                categories=["Sơ mi"],
                 target_gender="Nam",
                 price_estimate="280.000đ - 380.000đ",
                 description="Áo sơ mi may đo chuẩn phom dáng nam giới Việt Nam, chống nhăn hiệu quả.",
@@ -106,7 +119,7 @@ def seed_data():
             ),
             Product(
                 name="Áo Sơ Mi Nữ Lụa Cổ Thắt Nơ",
-                category="Sơ mi",
+                categories=["Sơ mi"],
                 target_gender="Nữ",
                 price_estimate="260.000đ - 350.000đ",
                 description="Phong cách nữ tính, thanh lịch, thích hợp đi làm, gặp đối tác hoặc dạo phố.",

@@ -4,21 +4,33 @@ import ProductCard from './components/ProductCard';
 import Chatbox from './components/Chatbox';
 import AuthModal from './components/AuthModal';
 import ProductDetailModal from './components/ProductDetailModal';
-import { getProducts } from './api';
+import Dashboard from './components/Dashboard';
+import { getProducts, getCategories } from './api';
 import { Sparkles, ShieldCheck, Ruler, Clock, Filter, RefreshCw } from 'lucide-react';
 
-const CATEGORIES = ['Tất cả', 'Đầm', 'Quần tây', 'Đồ bộ', 'Sơ mi'];
 const GENDERS = ['Cả nam lẫn nữ', 'Nam', 'Nữ'];
 
 export default function App() {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState(['Tất cả', 'Đầm', 'Quần tây', 'Đồ bộ', 'Sơ mi']);
   const [selectedCategory, setSelectedCategory] = useState('Tất cả');
   const [loading, setLoading] = useState(true);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(() => {
+    const saved = localStorage.getItem('currentUser');
+    return saved ? JSON.parse(saved) : null;
+  });
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [prefillProduct, setPrefillProduct] = useState(null);
   const [selectedDetailProduct, setSelectedDetailProduct] = useState(null);
   const [selectedGender, setSelectedGender] = useState('Cả nam lẫn nữ');
+  const [currentView, setCurrentView] = useState(() => {
+    const savedView = localStorage.getItem('currentView');
+    return savedView || 'home';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('currentView', currentView);
+  }, [currentView]);
 
   const filteredProducts = products.filter((product) => {
     if (selectedGender === 'Cả nam lẫn nữ') return true;
@@ -30,6 +42,8 @@ export default function App() {
     try {
       const data = await getProducts(cat);
       setProducts(data);
+      const cats = await getCategories();
+      setCategories(['Tất cả', ...cats]);
     } catch (err) {
       console.error('Failed to load products:', err);
     } finally {
@@ -38,8 +52,16 @@ export default function App() {
   };
 
   useEffect(() => {
-    loadProducts(selectedCategory);
-  }, [selectedCategory]);
+    if (currentView === 'home') {
+      loadProducts(selectedCategory);
+    }
+  }, [selectedCategory, currentView]);
+
+  useEffect(() => {
+    if (currentView === 'dashboard' && (!currentUser || currentUser.role !== 'admin')) {
+      setCurrentView('home');
+    }
+  }, [currentUser, currentView]);
 
   const handleSelectForConsult = (product) => {
     setPrefillProduct(product);
@@ -52,14 +74,24 @@ export default function App() {
       <Header
         currentUser={currentUser}
         onOpenAuth={() => setIsAuthOpen(true)}
-        onLogout={() => setCurrentUser(null)}
+        onLogout={() => {
+          setCurrentUser(null);
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('currentView');
+        }}
+        currentView={currentView}
+        onViewChange={setCurrentView}
       />
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-10">
 
-        {/* Banner Hero Section */}
-        <section className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-gradient-to-r from-luxury-navy via-indigo-950 to-slate-900 text-white p-6 sm:p-12 shadow-2xl border border-indigo-900/40">
+        {currentView === 'dashboard' ? (
+          <Dashboard />
+        ) : (
+          <>
+            {/* Banner Hero Section */}
+            <section className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-gradient-to-r from-luxury-navy via-indigo-950 to-slate-900 text-white p-6 sm:p-12 shadow-2xl border border-indigo-900/40">
           <div className="relative z-10 max-w-2xl space-y-4">
             <div className="inline-flex items-center space-x-2 px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full text-amber-300 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">
               <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
@@ -140,7 +172,7 @@ export default function App() {
             {/* Category Filter Buttons */}
             <div className="flex items-center space-x-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
               <Filter className="w-4 h-4 text-slate-400 hidden sm:block mr-1" />
-              {CATEGORIES.map((cat) => {
+              {categories.map((cat) => {
                 const isActive = selectedCategory === cat;
                 return (
                   <button
@@ -182,6 +214,8 @@ export default function App() {
           )}
 
         </section>
+          </>
+        )}
 
       </main>
 
@@ -197,7 +231,17 @@ export default function App() {
       <AuthModal
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
-        onAuthSuccess={(user) => setCurrentUser(user)}
+        onAuthSuccess={(user) => {
+          setCurrentUser(user);
+          if (user) {
+            localStorage.setItem('currentUser', JSON.stringify(user));
+          } else {
+            localStorage.removeItem('currentUser');
+          }
+          if (user && user.role === 'admin') {
+            setCurrentView('dashboard');
+          }
+        }}
       />
 
       {/* AI Chatbox Widget */}

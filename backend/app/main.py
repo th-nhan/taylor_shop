@@ -1,8 +1,11 @@
 import os
+import shutil
+import uuid
 from contextlib import asynccontextmanager
 from typing import List, Optional
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlmodel import SQLModel, create_engine, Session, select
 
 from app.models import (
@@ -33,6 +36,14 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Cấu hình thư mục chứa ảnh upload
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+UPLOAD_DIR = os.path.join(BASE_DIR, "static", "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# Mount Static Files
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
+
 # Cấu hình CORS cho phép React Vite truy cập
 app.add_middleware(
     CORSMiddleware,
@@ -46,6 +57,25 @@ app.add_middleware(
 def read_root():
     return {"message": "Chào mừng đến với API NHÀ MAY THÚY DIỄM!", "status": "active"}
 
+@app.post("/api/upload")
+def upload_image(file: UploadFile = File(...)):
+    # Tạo thư mục nếu chưa có
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+    
+    # Tạo tên file độc nhất tránh trùng lặp
+    ext = os.path.splitext(file.filename)[1]
+    unique_filename = f"{uuid.uuid4()}{ext}"
+    file_path = os.path.join(UPLOAD_DIR, unique_filename)
+    
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Không thể lưu file: {str(e)}")
+        
+    return {"url": f"http://localhost:8000/static/uploads/{unique_filename}"}
+
+
 # ==========================================
 # 1. API SẢN PHẨM & MẪU ĐỒ
 # ==========================================
@@ -53,10 +83,25 @@ def read_root():
 @app.get("/api/products", response_model=List[Product])
 def get_products(category: Optional[str] = None, session: Session = Depends(get_session)):
     statement = select(Product)
-    if category and category != "Tất cả":
-        statement = statement.where(Product.category == category)
     results = session.exec(statement).all()
+    if category and category != "Tất cả":
+        results = [p for p in results if category in p.categories]
     return results
+
+@app.get("/api/categories", response_model=List[str])
+def get_categories(session: Session = Depends(get_session)):
+    statement = select(Product)
+    products = session.exec(statement).all()
+    categories_set = set()
+    for p in products:
+        if p.categories:
+            for cat in p.categories:
+                categories_set.add(cat)
+    # Danh mục mặc định ban đầu
+    default_categories = ["Đầm", "Quần tây", "Đồ bộ", "Sơ mi"]
+    for cat in default_categories:
+        categories_set.add(cat)
+    return sorted(list(categories_set))
 
 @app.get("/api/products/{product_id}", response_model=Product)
 def get_product_detail(product_id: int, session: Session = Depends(get_session)):
@@ -115,7 +160,8 @@ def register(user_data: UserRegister, session: Session = Depends(get_session)):
     new_user = User(
         full_name=user_data.full_name,
         phone=user_data.phone,
-        password_hash=user_data.password # Đơn giản hóa hash trong mẫu này
+        password_hash=user_data.password, # Đơn giản hóa hash trong mẫu này
+        role="user"
     )
     session.add(new_user)
     session.commit()
@@ -125,6 +171,7 @@ def register(user_data: UserRegister, session: Session = Depends(get_session)):
         id=new_user.id,
         full_name=new_user.full_name,
         phone=new_user.phone,
+        role=new_user.role,
         created_at=new_user.created_at
     )
     return AuthResponse(message="Đăng ký tài khoản thành công!", user=user_resp)
@@ -139,6 +186,74 @@ def login(credentials: UserLogin, session: Session = Depends(get_session)):
         id=user.id,
         full_name=user.full_name,
         phone=user.phone,
+        role=user.role,
         created_at=user.created_at
     )
     return AuthResponse(message="Đăng nhập thành công!", user=user_resp)
+
+# ==========================================
+# 4. API QUẢN LÝ TÀI KHOẢN (DASHBOARD)
+# ==========================================
+
+@app.get("/api/users", response_model=List[UserResponse])
+def get_users(session: Session = Depends(get_session)):
+    users = session.exec(select(User)).all()
+    return [
+        UserResponse(
+            id=u.id,
+            full_name=u.full_name,
+            phone=u.phone,
+            role=u.role,
+            created_at=u.created_at
+        ) for u in users
+    ]
+
+@app.delete("/api/users/{user_id}")
+def delete_user(user_id: int, session: Session = Depends(get_session)):
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Không tìm thấy tài khoản")
+    session.delete(user)
+    session.commit()
+    return {"message": "Xóa tài khoản thành công!"}
+
+# ==========================================
+# 5. API QUẢN LÝ SẢN PHẨM (DASHBOARD)
+# ==========================================
+
+@app.post("/api/products", response_model=Product)
+def create_product(product: Product, session: Session = Depends(get_session)):
+    session.add(product)
+    session.commit()
+    session.refresh(product)
+    return product
+
+@app.put("/api/products/{product_id}", response_model=Product)
+def update_product(product_id: int, product_data: Product, session: Session = Depends(get_session)):
+    db_product = session.get(Product, product_id)
+    if not db_product:
+        raise HTTPException(status_code=404, detail="Không tìm thấy mẫu sản phẩm")
+    
+    db_product.name = product_data.name
+    db_product.categories = product_data.categories
+    db_product.target_gender = product_data.target_gender
+    db_product.price_estimate = product_data.price_estimate
+    db_product.description = product_data.description
+    db_product.design_details = product_data.design_details
+    db_product.fabric_recommendations = product_data.fabric_recommendations
+    db_product.image_urls = product_data.image_urls
+    
+    session.add(db_product)
+    session.commit()
+    session.refresh(db_product)
+    return db_product
+
+@app.delete("/api/products/{product_id}")
+def delete_product(product_id: int, session: Session = Depends(get_session)):
+    product = session.get(Product, product_id)
+    if not product:
+        raise HTTPException(status_code=404, detail="Không tìm thấy mẫu sản phẩm")
+    session.delete(product)
+    session.commit()
+    return {"message": "Xóa mẫu sản phẩm thành công!"}
+

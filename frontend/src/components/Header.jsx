@@ -1,14 +1,14 @@
 import React from 'react';
-import { Scissors, User, LogOut, PhoneCall } from 'lucide-react';
+import { Scissors, User, LogOut, PhoneCall, LayoutDashboard, Home } from 'lucide-react';
 
-export default function Header({ currentUser, onOpenAuth, onLogout }) {
+export default function Header({ currentUser, onOpenAuth, onLogout, currentView, onViewChange }) {
   return (
     <header className="sticky top-0 z-40 bg-luxury-navy text-white shadow-lg border-b border-indigo-900/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
 
           {/* Logo & Brand Name */}
-          <div className="flex items-center space-x-2 sm:space-x-3 cursor-pointer">
+          <div onClick={() => onViewChange('home')} className="flex items-center space-x-2 sm:space-x-3 cursor-pointer">
             <div className="p-1.5 sm:p-2.5 bg-gradient-to-tr from-amber-600 to-amber-400 rounded-xl shadow-md text-slate-950">
               <Scissors className="w-4 h-4 sm:w-6 h-6 transform -rotate-45" />
             </div>
@@ -33,6 +33,30 @@ export default function Header({ currentUser, onOpenAuth, onLogout }) {
             </a>
 
             <div className="h-6 w-px bg-indigo-800/80 hidden md:block"></div>
+
+            {/* Dashboard / Home Toggle Button */}
+            {currentUser && currentUser.role === 'admin' && (
+              <>
+                {currentView === 'dashboard' ? (
+                  <button
+                    onClick={() => onViewChange('home')}
+                    className="flex items-center space-x-1.5 bg-slate-800 text-amber-400 hover:bg-slate-700 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-semibold text-xs sm:text-sm border border-slate-700 transition-all duration-200"
+                  >
+                    <Home className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <span>Trang Chủ</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => onViewChange('dashboard')}
+                    className="flex items-center space-x-1.5 bg-indigo-950 text-amber-400 hover:bg-indigo-900 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-semibold text-xs sm:text-sm border border-indigo-800 transition-all duration-200"
+                  >
+                    <LayoutDashboard className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <span>Quản Lý</span>
+                  </button>
+                )}
+                <div className="h-6 w-px bg-indigo-800/80 hidden sm:block"></div>
+              </>
+            )}
 
             {currentUser ? (
               <div className="flex items-center space-x-2 sm:space-x-3 bg-indigo-900/60 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-indigo-700/50">
@@ -68,3 +92,4 @@ export default function Header({ currentUser, onOpenAuth, onLogout }) {
     </header>
   );
 }
+

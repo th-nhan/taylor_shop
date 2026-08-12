@@ -4,7 +4,7 @@ import { X, ZoomIn, ZoomOut, Download, MessageSquare, ArrowLeft, ShoppingBag, Ch
 export default function ProductDetailModal({ product, onClose, onConsult }) {
   if (!product) return null;
 
-  const { name, category, target_gender, price_estimate, description, design_details, fabric_recommendations, image_urls } = product;
+  const { name, categories, target_gender, price_estimate, description, design_details, fabric_recommendations, image_urls } = product;
   const images = image_urls && image_urls.length > 0 ? image_urls : ['https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&auto=format&fit=crop&q=80'];
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -150,11 +150,13 @@ export default function ProductDetailModal({ product, onClose, onConsult }) {
               </div>
 
               {/* Badges */}
-              <div className="absolute top-4 left-4 flex space-x-2">
-                <span className="px-3 py-1 bg-luxury-navy/90 backdrop-blur-md text-white text-xs font-semibold rounded-full shadow border border-red-900/30">
-                  {category}
-                </span>
-                <span className="px-2.5 py-1 bg-amber-500/90 backdrop-blur-md text-slate-950 text-xs font-bold rounded-full shadow">
+              <div className="absolute top-4 left-4 flex flex-row flex-nowrap items-center gap-1.5 max-w-[90%] overflow-hidden">
+                {categories && categories.slice(0, 2).map((cat, idx) => (
+                  <span key={idx} className="px-2.5 py-1 bg-luxury-navy/90 backdrop-blur-md text-white text-[11px] font-semibold rounded-full shadow border border-red-900/30 whitespace-nowrap">
+                    {cat}
+                  </span>
+                ))}
+                <span className="px-2 py-1 bg-amber-500/90 backdrop-blur-md text-slate-950 text-[11px] font-bold rounded-full shadow whitespace-nowrap">
                   {target_gender}
                 </span>
               </div>
@@ -186,11 +188,11 @@ export default function ProductDetailModal({ product, onClose, onConsult }) {
               {/* Key Features */}
               {design_details && Object.keys(design_details).length > 0 && (
                 <div className="bg-white p-4.5 rounded-2xl border border-red-950/5 shadow-sm space-y-3">
-                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <h3 className="pt-4 pl-3 text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                     Chi tiết thiết kế may đo
                   </h3>
-                  <div className="grid grid-cols-1 gap-2 text-xs">
+                  <div className="grid grid-cols-1 gap-2 text-xs px-4 pb-4">
                     {Object.entries(design_details).map(([key, val]) => (
                       <div key={key} className="flex items-start justify-between border-b border-slate-50 pb-1.5 last:border-0 last:pb-0">
                         <span className="font-medium text-slate-500">{key}:</span>
@@ -244,48 +246,48 @@ export default function ProductDetailModal({ product, onClose, onConsult }) {
         <div className="fixed inset-0 z-[100] bg-black/95 flex flex-col animate-fadeIn select-none">
           
           {/* Lightbox Controls Header */}
-          <div className="flex items-center justify-between p-4 text-white z-10 bg-gradient-to-b from-black/60 to-transparent">
-            <div className="flex items-center space-x-3">
+          <div className="flex items-center justify-between p-3 sm:p-4 text-white z-10 bg-gradient-to-b from-black/80 to-transparent w-full">
+            <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1 mr-3">
               <button
                 onClick={() => setIsLightboxOpen(false)}
-                className="p-2 hover:bg-white/10 rounded-full transition-colors flex items-center justify-center"
+                className="p-1.5 sm:p-2 hover:bg-white/10 rounded-full transition-colors flex items-center justify-center flex-shrink-0"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
-              <span className="text-sm font-semibold truncate max-w-[200px] sm:max-w-md">{name}</span>
+              <span className="text-xs sm:text-sm font-semibold truncate">{name}</span>
             </div>
             
             {/* Toolbar Buttons */}
-            <div className="flex items-center space-x-2 sm:space-x-3">
+            <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
               <button
                 onClick={handleZoomIn}
                 disabled={zoomScale >= 3}
-                className="p-2 hover:bg-white/10 rounded-full transition-colors flex items-center justify-center disabled:opacity-40"
+                className="p-1.5 sm:p-2 hover:bg-white/10 rounded-full transition-colors flex items-center justify-center disabled:opacity-40 flex-shrink-0"
                 title="Phóng to"
               >
-                <ZoomIn className="w-5 h-5" />
+                <ZoomIn className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
               </button>
               <button
                 onClick={handleZoomOut}
                 disabled={zoomScale <= 1}
-                className="p-2 hover:bg-white/10 rounded-full transition-colors flex items-center justify-center disabled:opacity-40"
+                className="p-1.5 sm:p-2 hover:bg-white/10 rounded-full transition-colors flex items-center justify-center disabled:opacity-40 flex-shrink-0"
                 title="Thu nhỏ"
               >
-                <ZoomOut className="w-5 h-5" />
+                <ZoomOut className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
               </button>
               <button
                 onClick={handleResetZoom}
-                className="p-2 hover:bg-white/10 rounded-full transition-colors text-xs font-semibold"
+                className="p-1.5 sm:p-2 hover:bg-white/10 rounded-full transition-colors text-[10px] sm:text-xs font-semibold flex-shrink-0"
                 title="Đặt lại"
               >
                 100%
               </button>
               <button
                 onClick={(e) => handleDownloadImage(e, images[activeImageIndex])}
-                className="p-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-full transition-colors flex items-center justify-center"
+                className="p-2 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-full transition-colors flex items-center justify-center flex-shrink-0"
                 title="Tải ảnh mẫu"
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </div>
           </div>

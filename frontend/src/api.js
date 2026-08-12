@@ -15,6 +15,11 @@ export const getProducts = async (category = '') => {
   return response.data;
 };
 
+export const getCategories = async () => {
+  const response = await api.get('/categories');
+  return response.data;
+};
+
 export const sendChatMessage = async (message, userId = null) => {
   const response = await api.post('/chat', { message, user_id: userId });
   return response.data;
@@ -37,4 +42,42 @@ export const loginUser = async (phone, password) => {
   return response.data;
 };
 
+export const getUsers = async () => {
+  const response = await api.get('/users');
+  return response.data;
+};
+
+export const deleteUser = async (userId) => {
+  const response = await api.delete(`/users/${userId}`);
+  return response.data;
+};
+
+export const createProduct = async (productData) => {
+  const response = await api.post('/products', productData);
+  return response.data;
+};
+
+export const updateProduct = async (productId, productData) => {
+  const response = await api.put(`/products/${productId}`, productData);
+  return response.data;
+};
+
+export const deleteProduct = async (productId) => {
+  const response = await api.delete(`/products/${productId}`);
+  return response.data;
+};
+
+export const uploadImage = async (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await api.post('/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
 export default api;
+
+

@@ -2,7 +2,7 @@ import React from 'react';
 import { Sparkles, Tag, Layers, CheckCircle2, MessageSquare } from 'lucide-react';
 
 export default function ProductCard({ product, onSelectForConsult }) {
-  const { name, category, target_gender, price_estimate, description, design_details, fabric_recommendations, image_urls } = product;
+  const { name, categories, target_gender, price_estimate, description, design_details, fabric_recommendations, image_urls } = product;
 
   const imageUrl = image_urls && image_urls.length > 0
     ? image_urls[0]
@@ -24,11 +24,13 @@ export default function ProductCard({ product, onSelectForConsult }) {
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-80" />
 
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex items-center space-x-2">
-          <span className="px-3 py-1 bg-luxury-navy/90 backdrop-blur-md text-white text-xs font-semibold rounded-full shadow">
-            {category}
-          </span>
-          <span className="px-2.5 py-1 bg-amber-500/90 backdrop-blur-md text-slate-950 text-xs font-bold rounded-full shadow">
+        <div className="absolute top-3 left-3 flex flex-row flex-nowrap items-center gap-1.5 max-w-[90%] overflow-hidden">
+          {categories && categories.slice(0, 2).map((cat, idx) => (
+            <span key={idx} className="px-2.5 py-1 bg-luxury-navy/90 backdrop-blur-md text-white text-[11px] font-semibold rounded-full shadow whitespace-nowrap">
+              {cat}
+            </span>
+          ))}
+          <span className="px-2 py-1 bg-amber-500/90 backdrop-blur-md text-slate-950 text-[11px] font-bold rounded-full shadow whitespace-nowrap">
             {target_gender}
           </span>
         </div>

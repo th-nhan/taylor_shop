@@ -10,7 +10,7 @@ from pydantic import BaseModel
 class Product(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
-    category: str
+    categories: List[str] = Field(default=[], sa_column=Column(JSON))
     target_gender: str
     price_estimate: str
     description: str
@@ -23,6 +23,7 @@ class User(SQLModel, table=True):
     full_name: str
     phone: str = Field(unique=True, index=True)
     password_hash: str
+    role: str = Field(default="user")
     created_at: datetime = Field(default_factory=datetime.now)
 
 class ChatHistory(SQLModel, table=True):
@@ -49,6 +50,7 @@ class UserResponse(BaseModel):
     id: int
     full_name: str
     phone: str
+    role: str
     created_at: datetime
 
 class AuthResponse(BaseModel):
