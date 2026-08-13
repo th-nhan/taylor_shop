@@ -2,7 +2,7 @@ import React from 'react';
 import { Sparkles, Tag, Layers, CheckCircle2, MessageSquare } from 'lucide-react';
 
 export default function ProductCard({ product, onSelectForConsult }) {
-  const { name, categories, target_gender, price_estimate, description, design_details, fabric_recommendations, image_urls } = product;
+  const { name, categories, target_gender, price_estimate, description, design_details, fabric_recommendations, image_urls, is_pinned } = product;
 
   const imageUrl = image_urls && image_urls.length > 0
     ? image_urls[0]
@@ -22,6 +22,13 @@ export default function ProductCard({ product, onSelectForConsult }) {
           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-80" />
+
+        {is_pinned && (
+          <div className="absolute top-3 right-3 flex items-center space-x-1 px-2.5 py-1 bg-amber-500 text-slate-950 text-[10px] font-extrabold uppercase rounded-full shadow-lg border border-amber-400 z-10">
+            <Sparkles className="w-3 h-3 fill-current" />
+            <span>Nổi bật</span>
+          </div>
+        )}
 
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-row flex-nowrap items-center gap-1.5 max-w-[90%] overflow-hidden">

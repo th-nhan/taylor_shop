@@ -6,7 +6,7 @@ import {
 } from '../api';
 import { 
   User, Package, Plus, Trash2, Edit2, X, Check, 
-  RefreshCw, AlertCircle, Phone, Calendar, Shirt, Info, DollarSign, Image
+  RefreshCw, AlertCircle, Phone, Calendar, Shirt, Info, DollarSign, Image, Pin
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -35,7 +35,8 @@ export default function Dashboard() {
       'Khóa kéo': ''
     },
     fabric_recommendations: '',
-    image_urls: ''
+    image_urls: '',
+    is_pinned: false
   });
 
   const loadData = async () => {
@@ -83,6 +84,19 @@ export default function Dashboard() {
     }
   };
 
+  const handleTogglePin = async (product) => {
+    try {
+      const updatedProduct = {
+        ...product,
+        is_pinned: !product.is_pinned
+      };
+      await updateProduct(product.id, updatedProduct);
+      setProducts(products.map(p => p.id === product.id ? { ...p, is_pinned: !p.is_pinned } : p));
+    } catch (err) {
+      alert('Không thể cập nhật trạng thái ghim!');
+    }
+  };
+
   const handleOpenCreate = () => {
     setEditingProduct(null);
     setNewCategoryName('');
@@ -99,7 +113,8 @@ export default function Dashboard() {
         'Khóa kéo': ''
       },
       fabric_recommendations: '',
-      image_urls: ''
+      image_urls: '',
+      is_pinned: false
     });
     setIsFormOpen(true);
   };
@@ -120,7 +135,8 @@ export default function Dashboard() {
         'Khóa kéo': product.design_details?.['Khóa kéo'] || ''
       },
       fabric_recommendations: product.fabric_recommendations ? product.fabric_recommendations.join(', ') : '',
-      image_urls: product.image_urls ? product.image_urls.join(', ') : ''
+      image_urls: product.image_urls ? product.image_urls.join(', ') : '',
+      is_pinned: product.is_pinned || false
     });
     setIsFormOpen(true);
   };
@@ -361,11 +377,19 @@ export default function Dashboard() {
                               />
                             </td>
                             <td className="px-6 py-4 font-semibold text-slate-900">
-                              <div>
-                                <p className="font-semibold text-slate-900">{product.name}</p>
-                                <span className="inline-block mt-0.5 px-2 py-0.5 bg-slate-100 text-[10px] text-slate-600 rounded-full font-medium">
-                                  Dành cho: {product.target_gender}
-                                </span>
+                              <div className="flex items-center space-x-2">
+                                <div>
+                                  <p className="font-semibold text-slate-900">{product.name}</p>
+                                  <span className="inline-block mt-0.5 px-2 py-0.5 bg-slate-100 text-[10px] text-slate-600 rounded-full font-medium">
+                                    Dành cho: {product.target_gender}
+                                  </span>
+                                </div>
+                                {product.is_pinned && (
+                                  <span className="px-1.5 py-0.5 bg-amber-500 text-slate-950 text-[10px] font-bold rounded-md flex items-center space-x-0.5 shadow-sm">
+                                    <Pin className="w-2.5 h-2.5 fill-current" />
+                                    <span>Đã ghim</span>
+                                  </span>
+                                )}
                               </div>
                             </td>
                             <td className="px-6 py-4">
@@ -380,6 +404,17 @@ export default function Dashboard() {
                             <td className="px-6 py-4 text-amber-600 font-semibold">{product.price_estimate}</td>
                             <td className="px-6 py-4 text-right">
                               <div className="flex items-center justify-end space-x-1">
+                                <button
+                                  onClick={() => handleTogglePin(product)}
+                                  className={`p-1.5 rounded-lg transition-colors ${
+                                    product.is_pinned 
+                                      ? 'text-amber-500 bg-amber-50 hover:bg-amber-100 hover:text-amber-600' 
+                                      : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                                  }`}
+                                  title={product.is_pinned ? "Bỏ ghim sản phẩm" : "Ghim lên đầu trang chủ"}
+                                >
+                                  <Pin className="w-4 h-4" />
+                                </button>
                                 <button
                                   onClick={() => handleOpenEdit(product)}
                                   className="p-1.5 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg transition-colors"
@@ -521,6 +556,20 @@ export default function Dashboard() {
                       placeholder="VD: 350.000đ - 450.000đ"
                     />
                   </div>
+                </div>
+
+                {/* Pinned toggle */}
+                <div className="col-span-2 flex items-center space-x-2 bg-amber-50/50 border border-amber-200/60 rounded-xl p-3">
+                  <input
+                    type="checkbox"
+                    id="is_pinned"
+                    checked={formData.is_pinned}
+                    onChange={(e) => setFormData({ ...formData, is_pinned: e.target.checked })}
+                    className="w-4 h-4 text-amber-600 border-slate-300 rounded focus:ring-amber-500"
+                  />
+                  <label htmlFor="is_pinned" className="text-xs font-bold text-slate-700 uppercase cursor-pointer select-none">
+                    Ghim sản phẩm nổi bật lên đầu trang chủ
+                  </label>
                 </div>
 
                 {/* Image Upload & Link */}

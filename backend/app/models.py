@@ -17,6 +17,7 @@ class Product(SQLModel, table=True):
     design_details: Dict[str, str] = Field(default={}, sa_column=Column(JSON))
     fabric_recommendations: List[str] = Field(default=[], sa_column=Column(JSON))
     image_urls: List[str] = Field(default=[], sa_column=Column(JSON))
+    is_pinned: bool = Field(default=False)
 
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)

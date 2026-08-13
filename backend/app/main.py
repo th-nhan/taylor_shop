@@ -26,6 +26,14 @@ def get_session():
 async def lifespan(app: FastAPI):
     # Khởi tạo bảng DB & Seed data khi ứng dụng chạy
     SQLModel.metadata.create_all(engine)
+    # Tự động thêm cột is_pinned nếu chưa tồn tại
+    try:
+        from sqlalchemy import text
+        with Session(engine) as session:
+            session.execute(text("ALTER TABLE product ADD COLUMN is_pinned BOOLEAN DEFAULT 0"))
+            session.commit()
+    except Exception:
+        pass
     seed_data()
     yield
 
@@ -242,6 +250,7 @@ def update_product(product_id: int, product_data: Product, session: Session = De
     db_product.design_details = product_data.design_details
     db_product.fabric_recommendations = product_data.fabric_recommendations
     db_product.image_urls = product_data.image_urls
+    db_product.is_pinned = product_data.is_pinned
     
     session.add(db_product)
     session.commit()
