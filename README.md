@@ -135,4 +135,4 @@ nha_may_app/
 
 ## 📝 Giấy Phép & Bản Quyền
 
-Dự án phát triển dành cho **Nhà May Thúy Diễm**. Bản quyền thuộc về đội ngũ phát triển dự án.
+Dự án phát triển dành cho **Nhà May Thúy Diễm**. Bản quyền thuộc về đội ngũ phát triển dự án (Đỗ Thành Nhân).
