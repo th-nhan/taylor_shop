@@ -90,7 +90,7 @@ def upload_image(file: UploadFile = File(...)):
 
 @app.get("/api/products", response_model=List[Product])
 def get_products(category: Optional[str] = None, session: Session = Depends(get_session)):
-    statement = select(Product)
+    statement = select(Product).order_by(Product.is_pinned.desc(), Product.id.desc())
     results = session.exec(statement).all()
     if category and category != "Tất cả":
         results = [p for p in results if category in p.categories]

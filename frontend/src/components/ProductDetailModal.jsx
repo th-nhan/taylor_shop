@@ -4,7 +4,7 @@ import { X, ZoomIn, ZoomOut, Download, MessageSquare, ArrowLeft, ShoppingBag, Ch
 export default function ProductDetailModal({ product, onClose, onConsult }) {
   if (!product) return null;
 
-  const { name, categories, target_gender, price_estimate, description, design_details, fabric_recommendations, image_urls } = product;
+  const { name, categories, target_gender, price_estimate, description, design_details, fabric_recommendations, image_urls, is_pinned } = product;
   const images = image_urls && image_urls.length > 0 ? image_urls : ['https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&auto=format&fit=crop&q=80'];
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -157,6 +157,12 @@ export default function ProductDetailModal({ product, onClose, onConsult }) {
 
               {/* Badges */}
               <div className="absolute top-4 left-4 flex flex-row flex-nowrap items-center gap-1.5 max-w-[90%] overflow-hidden">
+                {is_pinned && (
+                  <span className="px-2.5 py-1 bg-amber-500 text-slate-950 text-[11px] font-extrabold uppercase rounded-full shadow flex items-center gap-1 whitespace-nowrap">
+                    <Sparkles className="w-3 h-3 fill-current" />
+                    <span>Nổi bật</span>
+                  </span>
+                )}
                 {categories && categories.slice(0, 2).map((cat, idx) => (
                   <span key={idx} className="px-2.5 py-1 bg-luxury-navy/90 backdrop-blur-md text-white text-[11px] font-semibold rounded-full shadow border border-red-900/30 whitespace-nowrap">
                     {cat}
@@ -192,29 +198,35 @@ export default function ProductDetailModal({ product, onClose, onConsult }) {
               </div>
 
               {/* Key Features */}
-              {design_details && Object.keys(design_details).length > 0 && (
-                <div className="bg-white p-4.5 rounded-2xl border border-red-950/5 shadow-sm space-y-3">
-                  <h3 className="pt-4 pl-3 text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                    Chi tiết thiết kế may đo
-                  </h3>
-                  <div className="grid grid-cols-1 gap-2 text-xs px-4 pb-4">
-                    {Object.entries(design_details).map(([key, val]) => (
-                      <div key={key} className="flex items-start justify-between border-b border-slate-50 pb-1.5 last:border-0 last:pb-0">
-                        <span className="font-medium text-slate-500">{key}:</span>
-                        <span className="font-semibold text-slate-800 text-right pl-4">{val}</span>
-                      </div>
-                    ))}
+              {(() => {
+                const validDetails = design_details
+                  ? Object.entries(design_details).filter(([_, val]) => val !== null && val !== undefined && String(val).trim() !== '')
+                  : [];
+                if (validDetails.length === 0) return null;
+                return (
+                  <div className="bg-white p-4.5 rounded-2xl border border-red-950/5 shadow-sm space-y-3">
+                    <h3 className="pt-4 pl-3 text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                      Chi tiết thiết kế may đo
+                    </h3>
+                    <div className="grid grid-cols-1 gap-2 text-xs px-4 pb-4">
+                      {validDetails.map(([key, val]) => (
+                        <div key={key} className="flex items-start justify-between border-b border-slate-50 pb-1.5 last:border-0 last:pb-0">
+                          <span className="font-medium text-slate-500">{key}:</span>
+                          <span className="font-semibold text-slate-800 text-right pl-4">{val}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* Recommended Fabrics */}
-              {fabric_recommendations && fabric_recommendations.length > 0 && (
+              {fabric_recommendations && fabric_recommendations.filter(f => f && String(f).trim() !== '').length > 0 && (
                 <div className="space-y-3">
                   <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Chất liệu khuyên dùng</h3>
                   <div className="flex flex-wrap gap-2">
-                    {fabric_recommendations.map((fabric, idx) => (
+                    {fabric_recommendations.filter(f => f && String(f).trim() !== '').map((fabric, idx) => (
                       <span
                         key={idx}
                         className="inline-flex items-center px-3 py-1.5 rounded-xl bg-amber-50 text-amber-900 border border-amber-200/50 text-xs font-medium"

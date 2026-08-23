@@ -36,9 +36,12 @@ export default function App() {
     .filter((product) => {
       if (selectedGender === 'Cả nam lẫn nữ') return true;
       return product.target_gender === selectedGender;
+    })
+    .sort((a, b) => {
+      if (a.is_pinned && !b.is_pinned) return -1;
+      if (!a.is_pinned && b.is_pinned) return 1;
+      return 0;
     });
-
-  const pinnedProducts = products.filter(p => p.is_pinned);
 
   const loadProducts = async (cat) => {
     setLoading(true);
@@ -132,28 +135,6 @@ export default function App() {
           {/* Subtle Background Glow */}
           <div className="absolute right-0 bottom-0 translate-x-1/4 translate-y-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
         </section>
-
-        {/* Featured Products Section (Grid Layout) */}
-        {!loading && pinnedProducts.length > 0 && (
-          <section className="space-y-4">
-            <h3 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-500 fill-amber-500" />
-              Sản Phẩm Nổi Bật
-              <span className="text-[10px] font-bold text-slate-950 bg-amber-400 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                Hot
-              </span>
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {pinnedProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onSelectForConsult={(prod) => setSelectedDetailProduct(prod)}
-                />
-              ))}
-            </div>
-          </section>
-        )}
 
         {/* Catalog Section */}
         <section className="space-y-6">

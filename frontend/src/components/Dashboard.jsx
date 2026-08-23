@@ -6,8 +6,81 @@ import {
 } from '../api';
 import { 
   User, Package, Plus, Trash2, Edit2, X, Check, 
-  RefreshCw, AlertCircle, Phone, Calendar, Shirt, Info, DollarSign, Image, Pin
+  RefreshCw, AlertCircle, Phone, Calendar, Shirt, Info, DollarSign, Image, Pin,
+  Sparkles, Ruler
 } from 'lucide-react';
+
+export const DESIGN_GROUPS = [
+  {
+    id: 'style',
+    title: '1. Chi tiết Kiểu dáng Thiết kế (Mẫu Catalog)',
+    subtitle: 'Các đặc điểm form dáng, kiểu cổ, tay áo, cạp khóa...',
+    icon: Sparkles,
+    fields: [
+      { key: 'Phom dáng (Fit)', placeholder: 'VD: Suông rộng (Oversize), Ôm vừa (Regular), Slimfit, Dáng chữ A...' },
+      { key: 'Kiểu cổ áo', placeholder: 'VD: Cổ tròn, Cổ V, Cổ tim, Cổ vuông, Cổ bẻ Danton, Cổ Tàu, Cổ sen...' },
+      { key: 'Kiểu tay áo', placeholder: 'VD: Tay ngắn, Tay lỡ, Tay dài, Tay bồng/phồng, Raglan, Cánh tiên, Sát nách...' },
+      { key: 'Khóa / Nút cài', placeholder: 'VD: Khóa kéo giọt nước sau, Khóa kéo hông, Nút cài bọc vải trước ngực...' },
+      { key: 'Túi áo / Túi quần', placeholder: 'VD: 2 túi xéo hông, Túi mổ có nắp, Túi ngực ốp ngoài, Không túi...' },
+      { key: 'Lưng quần / Cạp váy', placeholder: 'VD: Lưng thun toàn bộ, Lưng trước phẳng - sau thun, Cạp cao bản 4cm...' },
+      { key: 'Tùng váy / Độ dài', placeholder: 'VD: Xòe ly xếp, Xòe 360 độ, Bút chì xẻ sau, Đuôi cá, Midi, Maxi...' },
+      { key: 'Đường nhấn & Trang trí', placeholder: 'VD: Xếp ly ngực, Bèo nhún vai, Đường chỉ diễu viền, Xẻ tà bên hông...' },
+    ]
+  },
+  {
+    id: 'upper',
+    title: '2. Thông số Đo May Thân Trên (Áo, Sơ mi, Áo dài, Áo khoác)',
+    subtitle: 'Vòng cổ, vai, ngực, eo, nách, bắp tay, dài áo...',
+    icon: Ruler,
+    fields: [
+      { key: 'Vòng cổ', placeholder: 'Chu vi quanh chân cổ (VD: 36 - 38 cm)' },
+      { key: 'Rộng vai (Ngang vai)', placeholder: 'Đo từ đầu vai trái sang phải (VD: 36 - 38 cm)' },
+      { key: 'Vòng ngực', placeholder: 'Đo quanh điểm nở nhất ngực (VD: 84 - 88 cm)' },
+      { key: 'Hạ ngực', placeholder: 'Từ chân cổ/đầu vai xuống đỉnh ngực (VD: 23 - 25 cm)' },
+      { key: 'Khoảng cách 2 đầu ngực (Chồi ngực)', placeholder: 'Khoảng cách giữa 2 đỉnh ngực (VD: 16 - 18 cm)' },
+      { key: 'Vòng eo', placeholder: 'Đo chỗ nhỏ nhất của eo trên rốn (VD: 66 - 70 cm)' },
+      { key: 'Hạ eo', placeholder: 'Từ đầu vai xuống vị trí đo eo (VD: 36 - 38 cm)' },
+      { key: 'Dài áo', placeholder: 'Từ đỉnh vai xuống độ dài áo (VD: 55 - 60 cm)' },
+      { key: 'Dài tay', placeholder: 'Từ mút vai xuống cổ tay (VD: 52 - 55 cm)' },
+      { key: 'Vòng bắp tay', placeholder: 'Quanh vị trí bắp tay nở nhất (VD: 26 - 28 cm)' },
+      { key: 'Cửa tay (Cổ tay)', placeholder: 'Chu vi cổ tay hoặc ống tay (VD: 20 - 22 cm)' },
+      { key: 'Vòng nách', placeholder: 'Chu vi quanh nách khi thả lỏng (VD: 38 - 40 cm)' },
+    ]
+  },
+  {
+    id: 'lower',
+    title: '3. Thông số Đo May Thân Dưới (Quần tây, Quần short, Váy/Chân váy)',
+    subtitle: 'Vòng bụng, mông, đáy, dài quần, đùi, gối, ống...',
+    icon: Ruler,
+    fields: [
+      { key: 'Vòng bụng (Vòng cạp/lưng)', placeholder: 'Vị trí cạp cao/vừa/trễ (VD: 68 - 72 cm)' },
+      { key: 'Vòng mông', placeholder: 'Quanh điểm nở nhất của mông (VD: 90 - 94 cm)' },
+      { key: 'Hạ mông / Hạ đáy (Đũng quần)', placeholder: 'Độ sâu đáy quần (VD: 26 - 28 cm)' },
+      { key: 'Dài quần', placeholder: 'Từ cạp quần xuống mắt cá/gót (VD: 92 - 96 cm)' },
+      { key: 'Vòng đùi', placeholder: 'Chu vi đùi to nhất (VD: 50 - 54 cm)' },
+      { key: 'Vòng gối', placeholder: 'Quanh khớp gối (VD: 36 - 38 cm)' },
+      { key: 'Rộng ống (Cửa ống)', placeholder: 'Độ rộng ống quần dưới cùng (VD: 18 - 22 cm)' },
+    ]
+  },
+  {
+    id: 'dress',
+    title: '4. Thông số Đo May Đầm Liền / Váy Liền Thân',
+    subtitle: 'Dài đầm, hạ eo, vòng tùng váy...',
+    icon: Ruler,
+    fields: [
+      { key: 'Dài đầm (Dài váy)', placeholder: 'Từ đỉnh vai qua ngực xuống gấu váy (VD: 95 - 110 cm)' },
+      { key: 'Hạ ngực / Hạ eo / Hạ mông', placeholder: 'Định vị form thắt eo & điểm xòe/ôm' },
+      { key: 'Vòng tùng váy', placeholder: 'Độ rộng chân váy xòe (VD: 120 - 180 cm)' },
+    ]
+  }
+];
+
+export const INITIAL_DESIGN_DETAILS = {};
+DESIGN_GROUPS.forEach(group => {
+  group.fields.forEach(field => {
+    INITIAL_DESIGN_DETAILS[field.key] = '';
+  });
+});
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('products'); // 'users' or 'products'
@@ -28,12 +101,7 @@ export default function Dashboard() {
     target_gender: 'Nữ',
     price_estimate: '',
     description: '',
-    design_details: {
-      'Phom dáng': '',
-      'Kiểu cổ': '',
-      'Tay áo': '',
-      'Khóa kéo': ''
-    },
+    design_details: { ...INITIAL_DESIGN_DETAILS },
     fabric_recommendations: '',
     image_urls: '',
     is_pinned: false
@@ -106,12 +174,7 @@ export default function Dashboard() {
       target_gender: 'Nữ',
       price_estimate: '',
       description: '',
-      design_details: {
-        'Phom dáng': '',
-        'Kiểu cổ': '',
-        'Tay áo': '',
-        'Khóa kéo': ''
-      },
+      design_details: { ...INITIAL_DESIGN_DETAILS },
       fabric_recommendations: '',
       image_urls: '',
       is_pinned: false
@@ -122,18 +185,33 @@ export default function Dashboard() {
   const handleOpenEdit = (product) => {
     setEditingProduct(product);
     setNewCategoryName('');
+
+    const mergedDetails = { ...INITIAL_DESIGN_DETAILS };
+    if (product.design_details) {
+      // Map legacy/alias keys if necessary
+      if (product.design_details['Phom dáng'] && !product.design_details['Phom dáng (Fit)']) {
+        mergedDetails['Phom dáng (Fit)'] = product.design_details['Phom dáng'];
+      }
+      if (product.design_details['Kiểu cổ'] && !product.design_details['Kiểu cổ áo']) {
+        mergedDetails['Kiểu cổ áo'] = product.design_details['Kiểu cổ'];
+      }
+      if (product.design_details['Tay áo'] && !product.design_details['Kiểu tay áo']) {
+        mergedDetails['Kiểu tay áo'] = product.design_details['Tay áo'];
+      }
+      if (product.design_details['Khóa kéo'] && !product.design_details['Khóa / Nút cài']) {
+        mergedDetails['Khóa / Nút cài'] = product.design_details['Khóa kéo'];
+      }
+      // Merge all keys from product
+      Object.assign(mergedDetails, product.design_details);
+    }
+
     setFormData({
       name: product.name || '',
       categories: product.categories || [],
       target_gender: product.target_gender || 'Nữ',
       price_estimate: product.price_estimate || '',
       description: product.description || '',
-      design_details: {
-        'Phom dáng': product.design_details?.['Phom dáng'] || '',
-        'Kiểu cổ': product.design_details?.['Kiểu cổ'] || '',
-        'Tay áo': product.design_details?.['Tay áo'] || '',
-        'Khóa kéo': product.design_details?.['Khóa kéo'] || ''
-      },
+      design_details: mergedDetails,
       fabric_recommendations: product.fabric_recommendations ? product.fabric_recommendations.join(', ') : '',
       image_urls: product.image_urls ? product.image_urls.join(', ') : '',
       is_pinned: product.is_pinned || false
@@ -655,31 +733,55 @@ export default function Dashboard() {
                   />
                 </div>
 
-                {/* Design Details */}
-                <div className="col-span-2 border-t border-slate-100 pt-4">
-                  <span className="block text-xs font-bold text-slate-700 uppercase mb-3 flex items-center gap-1">
-                    <Info className="w-4 h-4 text-indigo-500" />
-                    Chi tiết thiết kế phom dáng
-                  </span>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {Object.keys(formData.design_details).map((key) => (
-                      <div key={key}>
-                        <label className="block text-[11px] font-semibold text-slate-500 mb-1">{key}</label>
-                        <input
-                          type="text"
-                          value={formData.design_details[key]}
-                          onChange={(e) => {
-                            const newDetails = { ...formData.design_details };
-                            newDetails[key] = e.target.value;
-                            setFormData({ ...formData, design_details: newDetails });
-                          }}
-                          className="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-indigo-500"
-                          placeholder={`Nhập ${key.toLowerCase()}...`}
-                        />
-                      </div>
-                    ))}
+                {/* Design Details & Body Measurements */}
+                <div className="col-span-2 border-t border-slate-100 pt-4 space-y-5">
+                  <div>
+                    <span className="block text-xs font-bold text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-amber-500" />
+                      Chi tiết Kiểu dáng Thiết kế & Thông số Đo may
+                    </span>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      Điền các thông số kiểu dáng và số đo tiêu chuẩn của mẫu. Trường nào để trống sẽ tự động được ẩn khi hiển thị trên web.
+                    </p>
                   </div>
+
+                  {DESIGN_GROUPS.map((group) => {
+                    const GroupIcon = group.icon;
+                    return (
+                      <div key={group.id} className="bg-slate-50/80 border border-slate-200/80 rounded-2xl p-4 space-y-3">
+                        <div className="flex items-center space-x-2 border-b border-slate-200/60 pb-2">
+                          <GroupIcon className="w-3.5 h-3.5 text-indigo-600 flex-shrink-0" />
+                          <div className="flex-1">
+                            <h5 className="text-xs font-bold text-slate-800">{group.title}</h5>
+                            {group.subtitle && (
+                              <p className="text-[10px] text-slate-500">{group.subtitle}</p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                          {group.fields.map((field) => (
+                            <div key={field.key}>
+                              <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                                {field.key}
+                              </label>
+                              <input
+                                type="text"
+                                value={formData.design_details[field.key] || ''}
+                                onChange={(e) => {
+                                  const newDetails = { ...formData.design_details };
+                                  newDetails[field.key] = e.target.value;
+                                  setFormData({ ...formData, design_details: newDetails });
+                                }}
+                                className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                                placeholder={field.placeholder}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {/* Fabric Recommendations */}
