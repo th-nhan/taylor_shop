@@ -56,14 +56,16 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 # Mount Static Files
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 
-# Cấu hình CORS cho phép React Vite truy cập
+# Cấu hình CORS mở rộng cho phép Vercel, localhost và mọi domain truy cập
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "*"],
-    allow_credentials=True,
+    allow_origin_regex=r"https?://.*",
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.get("/")
 def read_root():
