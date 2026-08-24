@@ -2,14 +2,19 @@ import os
 from sqlmodel import SQLModel, create_engine, Session, select
 from app.models import Product, User
 
-# Đường dẫn DB mặc định
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./nhamay.db")
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-def seed_data():
-    SQLModel.metadata.create_all(engine)
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
+
+def seed_data(engine_to_use=None):
+    target_engine = engine_to_use or engine
+    SQLModel.metadata.create_all(target_engine)
     
-    with Session(engine) as session:
+    with Session(target_engine) as session:
+
         # Seed Admin User if not exists
         existing_admin = session.exec(select(User).where(User.phone == "0999999999")).first()
         if not existing_admin:

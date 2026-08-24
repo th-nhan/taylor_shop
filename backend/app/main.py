@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
             session.commit()
     except Exception:
         pass
-    seed_data()
+    seed_data(engine)
     yield
 
 app = FastAPI(
