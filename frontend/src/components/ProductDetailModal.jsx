@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, ZoomIn, ZoomOut, Download, MessageSquare, ArrowLeft, ShoppingBag, CheckCircle2, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, ZoomIn, ZoomOut, Download, MessageSquare, Phone, ArrowLeft, ShoppingBag, CheckCircle2, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function ProductDetailModal({ product, onClose, onConsult }) {
   if (!product) return null;
@@ -243,7 +243,7 @@ export default function ProductDetailModal({ product, onClose, onConsult }) {
           </div>
 
           {/* Action Footer (Only AI Consult button, NO Book Appointment button) */}
-          <div className="sticky bottom-0 bg-white p-4 border-t border-slate-100 flex flex-col gap-2">
+          <div className="sticky bottom-0 bg-white p-4 border-t border-slate-100 flex gap-2">
             <button
               onClick={() => {
                 onConsult(product);
@@ -252,8 +252,19 @@ export default function ProductDetailModal({ product, onClose, onConsult }) {
               className="w-full py-3.5 bg-luxury-navy hover:bg-red-800 text-white font-bold rounded-xl shadow-lg hover:shadow-red-900/20 transition-all flex items-center justify-center space-x-2.5 text-sm"
             >
               <MessageSquare className="w-4 h-4 text-amber-400" />
-              <span>TƯ VẤN AI QUA TRỢ LÝ ẢO</span>
+              <span>TƯ VẤN TRỢ LÝ ẢO</span>
             </button>
+                        <button
+              onClick={() => {
+                onConsult(product);
+                onClose();
+              }}
+              className="w-full py-3.5 bg-luxury-navy hover:bg-red-800 text-white font-bold rounded-xl shadow-lg hover:shadow-red-900/20 transition-all flex items-center justify-center space-x-2.5 text-sm"
+            >
+              <Phone className="w-4 h-4 text-amber-400" />
+              <span>Liên hệ</span>
+            </button>
+
           </div>
 
         </div>

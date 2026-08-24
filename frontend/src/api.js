@@ -25,6 +25,11 @@ export const sendChatMessage = async (message, userId = null) => {
   return response.data;
 };
 
+export const getChatPrompts = async () => {
+  const response = await api.get('/chat/prompts');
+  return response.data;
+};
+
 export const registerUser = async (fullName, phone, password) => {
   const response = await api.post('/auth/register', {
     full_name: fullName,
