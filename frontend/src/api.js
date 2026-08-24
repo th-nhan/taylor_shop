@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+let rawUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api').trim().replace(/\/+$/, '');
+if (!rawUrl.endsWith('/api')) {
+  rawUrl = `${rawUrl}/api`;
+}
+const API_BASE_URL = rawUrl;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -8,6 +12,7 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
 
 export const getProducts = async (category = '') => {
   const params = category && category !== 'Tất cả' ? { category } : {};
