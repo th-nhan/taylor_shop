@@ -254,15 +254,14 @@ export default function ProductDetailModal({ product, onClose, onConsult }) {
               <MessageSquare className="w-4 h-4 text-amber-400" />
               <span>TƯ VẤN TRỢ LÝ ẢO</span>
             </button>
-                        <button
+            <button
               onClick={() => {
-                onConsult(product);
-                onClose();
+                window.location.href = 'https://zalo.me/0901370622';
               }}
-              className="w-full py-3.5 bg-luxury-navy hover:bg-red-800 text-white font-bold rounded-xl shadow-lg hover:shadow-red-900/20 transition-all flex items-center justify-center space-x-2.5 text-sm"
+              className="w-full py-3.5 bg-[#0068FF] hover:bg-[#0054cc] text-white font-bold rounded-xl shadow-lg hover:shadow-blue-600/30 transition-all flex items-center justify-center space-x-2 text-sm cursor-pointer"
             >
-              <Phone className="w-4 h-4 text-amber-400" />
-              <span>Liên hệ</span>
+              <Phone className="w-4 h-4 text-white" />
+              <span>LIÊN HỆ ZALO</span>
             </button>
 
           </div>
