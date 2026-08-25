@@ -95,6 +95,21 @@ async def upload_image(
     if files:
         all_files.extend(files)
         
+    # Fallback đọc từ request.form() nếu FastAPI không bind tự động
+    if not all_files:
+        try:
+            form = await request.form()
+            for key in ["file", "files"]:
+                for item in form.getlist(key):
+                    if hasattr(item, "filename") and item.filename:
+                        all_files.append(item)
+            if not all_files:
+                for k, v in form.items():
+                    if hasattr(v, "filename") and v.filename:
+                        all_files.append(v)
+        except Exception:
+            pass
+
     if not all_files:
         raise HTTPException(status_code=400, detail="Không có tệp ảnh nào được gửi lên.")
 
