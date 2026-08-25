@@ -12,65 +12,58 @@ import {
 
 export const DESIGN_GROUPS = [
   {
-    id: 'style',
-    title: '1. Chi tiết Kiểu dáng Thiết kế (Mẫu Catalog)',
-    subtitle: 'Các đặc điểm form dáng, kiểu cổ, tay áo, cạp khóa...',
+    id: 'form_silhouette',
+    title: '1. Phom dáng & Độ dài (Silhouette & Length)',
+    subtitle: 'Đặc điểm dáng áo/đầm/quần, độ ôm và độ dài mẫu',
     icon: Sparkles,
     fields: [
-      { key: 'Phom dáng (Fit)', placeholder: 'VD: Suông rộng (Oversize), Ôm vừa (Regular), Slimfit, Dáng chữ A...' },
-      { key: 'Kiểu cổ áo', placeholder: 'VD: Cổ tròn, Cổ V, Cổ tim, Cổ vuông, Cổ bẻ Danton, Cổ Tàu, Cổ sen...' },
-      { key: 'Kiểu tay áo', placeholder: 'VD: Tay ngắn, Tay lỡ, Tay dài, Tay bồng/phồng, Raglan, Cánh tiên, Sát nách...' },
-      { key: 'Khóa / Nút cài', placeholder: 'VD: Khóa kéo giọt nước sau, Khóa kéo hông, Nút cài bọc vải trước ngực...' },
-      { key: 'Túi áo / Túi quần', placeholder: 'VD: 2 túi xéo hông, Túi mổ có nắp, Túi ngực ốp ngoài, Không túi...' },
-      { key: 'Lưng quần / Cạp váy', placeholder: 'VD: Lưng thun toàn bộ, Lưng trước phẳng - sau thun, Cạp cao bản 4cm...' },
-      { key: 'Tùng váy / Độ dài', placeholder: 'VD: Xòe ly xếp, Xòe 360 độ, Bút chì xẻ sau, Đuôi cá, Midi, Maxi...' },
-      { key: 'Đường nhấn & Trang trí', placeholder: 'VD: Xếp ly ngực, Bèo nhún vai, Đường chỉ diễu viền, Xẻ tà bên hông...' },
+      { key: 'Phom dáng (Form/Fit)', placeholder: 'VD: Suông rộng (Oversize), Ôm nhẹ tôn dáng, Dáng chữ A, Dáng suông đứng, Dáng bút chì...' },
+      { key: 'Độ dài trang phục', placeholder: 'VD: Ngang hông, Qua gối, Dài bắp chân (Midi), Dài chạm mắt cá (Maxi), Chạm gót...' },
+      { key: 'Tùng váy / Độ xòe (nếu có)', placeholder: 'VD: Xòe xếp ly bồng, Xòe chữ A nhẹ, Tùng rủ mềm mại, Đuôi cá xẻ tà, Dáng ôm suông...' },
+      { key: 'Ống quần (đối với quần/đồ bộ)', placeholder: 'VD: Ống suông rộng (Wide leg), Ống đứng (Straight), Ống loe nhẹ, Ống côn (Slim)...' }
     ]
   },
   {
-    id: 'upper',
-    title: '2. Thông số Đo May Thân Trên (Áo, Sơ mi, Áo dài, Áo khoác)',
-    subtitle: 'Vòng cổ, vai, ngực, eo, nách, bắp tay, dài áo...',
-    icon: Ruler,
+    id: 'collar_shoulder',
+    title: '2. Chi tiết Cổ áo, Ve áo & Vai',
+    subtitle: 'Kiểu cổ, ve áo, độ khoét và phom vai',
+    icon: Shirt,
     fields: [
-      { key: 'Vòng cổ', placeholder: 'Chu vi quanh chân cổ (VD: 36 - 38 cm)' },
-      { key: 'Rộng vai (Ngang vai)', placeholder: 'Đo từ đầu vai trái sang phải (VD: 36 - 38 cm)' },
-      { key: 'Vòng ngực', placeholder: 'Đo quanh điểm nở nhất ngực (VD: 84 - 88 cm)' },
-      { key: 'Hạ ngực', placeholder: 'Từ chân cổ/đầu vai xuống đỉnh ngực (VD: 23 - 25 cm)' },
-      { key: 'Khoảng cách 2 đầu ngực (Chồi ngực)', placeholder: 'Khoảng cách giữa 2 đỉnh ngực (VD: 16 - 18 cm)' },
-      { key: 'Vòng eo', placeholder: 'Đo chỗ nhỏ nhất của eo trên rốn (VD: 66 - 70 cm)' },
-      { key: 'Hạ eo', placeholder: 'Từ đầu vai xuống vị trí đo eo (VD: 36 - 38 cm)' },
-      { key: 'Dài áo', placeholder: 'Từ đỉnh vai xuống độ dài áo (VD: 55 - 60 cm)' },
-      { key: 'Dài tay', placeholder: 'Từ mút vai xuống cổ tay (VD: 52 - 55 cm)' },
-      { key: 'Vòng bắp tay', placeholder: 'Quanh vị trí bắp tay nở nhất (VD: 26 - 28 cm)' },
-      { key: 'Cửa tay (Cổ tay)', placeholder: 'Chu vi cổ tay hoặc ống tay (VD: 20 - 22 cm)' },
-      { key: 'Vòng nách', placeholder: 'Chu vi quanh nách khi thả lỏng (VD: 38 - 40 cm)' },
+      { key: 'Kiểu cổ áo', placeholder: 'VD: Cổ tròn basic, Cổ tim / Cổ V khoét nhẹ, Cổ vuông Pháp, Cổ bẻ Danton, Cổ Tàu, Cổ thắt nơ...' },
+      { key: 'Đặc điểm vai', placeholder: 'VD: Vai thường, Vai bồng nhẹ, Có đệm mút đứng phom, Vai rớt / Trễ vai, Vai raglan...' },
+      { key: 'Đường nẹp / Ve áo', placeholder: 'VD: Nẹp giấu nút, Ve lật cổ vest chữ K, Nẹp bọc vải viền lé, Cổ phối viền ren...' }
     ]
   },
   {
-    id: 'lower',
-    title: '3. Thông số Đo May Thân Dưới (Quần tây, Quần short, Váy/Chân váy)',
-    subtitle: 'Vòng bụng, mông, đáy, dài quần, đùi, gối, ống...',
-    icon: Ruler,
+    id: 'sleeves_cuffs',
+    title: '3. Chi tiết Tay áo & Cửa tay',
+    subtitle: 'Dáng tay, độ dài tay và kiểu bo gấu',
+    icon: Shirt,
     fields: [
-      { key: 'Vòng bụng (Vòng cạp/lưng)', placeholder: 'Vị trí cạp cao/vừa/trễ (VD: 68 - 72 cm)' },
-      { key: 'Vòng mông', placeholder: 'Quanh điểm nở nhất của mông (VD: 90 - 94 cm)' },
-      { key: 'Hạ mông / Hạ đáy (Đũng quần)', placeholder: 'Độ sâu đáy quần (VD: 26 - 28 cm)' },
-      { key: 'Dài quần', placeholder: 'Từ cạp quần xuống mắt cá/gót (VD: 92 - 96 cm)' },
-      { key: 'Vòng đùi', placeholder: 'Chu vi đùi to nhất (VD: 50 - 54 cm)' },
-      { key: 'Vòng gối', placeholder: 'Quanh khớp gối (VD: 36 - 38 cm)' },
-      { key: 'Rộng ống (Cửa ống)', placeholder: 'Độ rộng ống quần dưới cùng (VD: 18 - 22 cm)' },
+      { key: 'Kiểu tay áo', placeholder: 'VD: Tay lỡ thanh lịch, Tay ngắn, Tay dài, Tay bồng/phồng, Tay cánh tiên, Sát nách / Ba lỗ, Tay loe...' },
+      { key: 'Cửa tay (Cổ tay)', placeholder: 'VD: Măng sét cài nút, Bo thun nhún co giãn, Cửa tay xẻ giọt nước, Gấu lật viền lai...' }
     ]
   },
   {
-    id: 'dress',
-    title: '4. Thông số Đo May Đầm Liền / Váy Liền Thân',
-    subtitle: 'Dài đầm, hạ eo, vòng tùng váy...',
-    icon: Ruler,
+    id: 'closure_waist_pockets',
+    title: '4. Khóa kéo, Cài nút, Cạp lưng & Túi',
+    subtitle: 'Vị trí tra khóa, nút áo, chi tiết lưng và túi',
+    icon: Info,
     fields: [
-      { key: 'Dài đầm (Dài váy)', placeholder: 'Từ đỉnh vai qua ngực xuống gấu váy (VD: 95 - 110 cm)' },
-      { key: 'Hạ ngực / Hạ eo / Hạ mông', placeholder: 'Định vị form thắt eo & điểm xòe/ôm' },
-      { key: 'Vòng tùng váy', placeholder: 'Độ rộng chân váy xòe (VD: 120 - 180 cm)' },
+      { key: 'Khóa kéo / Cài nút', placeholder: 'VD: Khóa kéo giọt nước ẩn sau lưng, Khóa kéo hông, Hàng nút bọc vải thủ công, Nút xà cừ...' },
+      { key: 'Lưng / Cạp quần & váy', placeholder: 'VD: Cạp cao bản 4cm tôn eo, Lưng trước phẳng - sau luồn thun co giãn, Lưng liền phối đai...' },
+      { key: 'Kiểu túi', placeholder: 'VD: 2 túi xéo sườn ẩn tiện lợi, Túi mổ có nắp giả, Túi ốp nổi trước ngực, Không túi...' }
+    ]
+  },
+  {
+    id: 'craft_accents',
+    title: '5. Kỹ thuật May, Lớp lót & Điểm nhấn Thủ công',
+    subtitle: 'Đường may lộn giấu chỉ, lót trong, xếp ly, đính kết...',
+    icon: Sparkles,
+    fields: [
+      { key: 'Lớp lót & Kỹ thuật may', placeholder: 'VD: May 2 lớp lót lụa Habutai mềm mát, May 1 lớp nhẹ mát, Kỹ thuật cuốn biên giấu chỉ cao cấp...' },
+      { key: 'Đường may & Điểm nhấn trang trí', placeholder: 'VD: Xếp ly ngực tinh xảo, Dập ly thân áo/chân váy, Bèo nhún tiểu thư, Rút nhún hạ eo, Xẻ tà hông...' },
+      { key: 'Chi tiết thủ công (nếu có)', placeholder: 'VD: Đính cúc bọc thủ công cùng màu, Thêu hoa thủ công, Kết cườm viền cổ, Nơ thắt trang trí...' }
     ]
   }
 ];
@@ -775,15 +768,15 @@ export default function Dashboard() {
                     />
                   </div>
 
-                  {/* Design Details & Body Measurements */}
+                  {/* Garment Design Characteristics */}
                   <div className="col-span-2 border-t border-slate-100 pt-4 space-y-5">
                     <div>
                       <span className="block text-xs font-bold text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
                         <Sparkles className="w-4 h-4 text-amber-500" />
-                        Chi tiết Kiểu dáng Thiết kế & Thông số Đo may
+                        Đặc điểm & Chi tiết Thiết kế Mẫu May
                       </span>
                       <p className="text-[11px] text-slate-500 mt-0.5">
-                        Điền các thông số kiểu dáng và số đo tiêu chuẩn của mẫu. Trường nào để trống sẽ tự động được ẩn khi hiển thị trên web.
+                        Mô tả đặc điểm kiểu dáng, phom dáng, kiểu cổ, tay áo, khóa cài, cạp lưng và kỹ thuật may của mẫu thiết kế. Trường nào để trống sẽ tự động ẩn khi hiển thị trên web.
                       </p>
                     </div>
 
