@@ -1,12 +1,14 @@
 import React from 'react';
 import { Sparkles, Tag, Layers, CheckCircle2, MessageSquare } from 'lucide-react';
+import { formatImageUrl } from '../api';
 
 export default function ProductCard({ product, onSelectForConsult }) {
   const { name, categories, target_gender, price_estimate, description, design_details, fabric_recommendations, image_urls, is_pinned } = product;
 
-  const imageUrl = image_urls && image_urls.length > 0
+  const rawImage = image_urls && image_urls.length > 0
     ? image_urls[0]
     : 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&auto=format&fit=crop&q=80';
+  const imageUrl = formatImageUrl(rawImage);
 
   return (
     <div 
@@ -20,6 +22,10 @@ export default function ProductCard({ product, onSelectForConsult }) {
           src={imageUrl}
           alt={name}
           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&auto=format&fit=crop&q=80';
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-80" />
 

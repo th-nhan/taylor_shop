@@ -77,9 +77,37 @@ export const deleteProduct = async (productId) => {
   return response.data;
 };
 
-export const uploadImage = async (file) => {
+export const getBackendBaseUrl = () => {
+  return API_BASE_URL.replace(/\/api$/, '');
+};
+
+export const formatImageUrl = (url) => {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (!trimmed) return '';
+  
+  const backendBase = getBackendBaseUrl();
+
+  // Nếu là relative path /static/...
+  if (trimmed.startsWith('/static/')) {
+    return `${backendBase}${trimmed}`;
+  }
+  
+  // Nếu url ảnh cũ bị hardcode localhost:8000 nhưng đang kết nối server deploy
+  if (trimmed.includes('localhost:8000/static/') && !backendBase.includes('localhost:8000')) {
+    return trimmed.replace(/https?:\/\/localhost:8000/, backendBase);
+  }
+  
+  return trimmed;
+};
+
+export const uploadImages = async (fileList) => {
   const formData = new FormData();
-  formData.append('file', file);
+  const filesArray = Array.isArray(fileList) ? fileList : Array.from(fileList || []);
+  filesArray.forEach((file) => {
+    formData.append('files', file);
+  });
+  
   const response = await api.post('/upload', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -88,6 +116,11 @@ export const uploadImage = async (file) => {
   return response.data;
 };
 
+export const uploadImage = async (file) => {
+  return uploadImages([file]);
+};
+
 export default api;
+
 
 

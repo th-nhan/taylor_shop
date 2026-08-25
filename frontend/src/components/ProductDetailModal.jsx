@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { X, ZoomIn, ZoomOut, Download, MessageSquare, Phone, ArrowLeft, ShoppingBag, CheckCircle2, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import { formatImageUrl } from '../api';
 
 export default function ProductDetailModal({ product, onClose, onConsult }) {
   if (!product) return null;
 
   const { name, categories, target_gender, price_estimate, description, design_details, fabric_recommendations, image_urls, is_pinned } = product;
-  const images = image_urls && image_urls.length > 0 ? image_urls : ['https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&auto=format&fit=crop&q=80'];
+  const rawImages = image_urls && image_urls.length > 0 ? image_urls : ['https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&auto=format&fit=crop&q=80'];
+  const images = rawImages.map(img => formatImageUrl(img));
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);

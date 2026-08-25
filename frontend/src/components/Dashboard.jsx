@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   getUsers, deleteUser, 
   getProducts, createProduct, updateProduct, deleteProduct,
-  uploadImage, getCategories
+  uploadImage, uploadImages, formatImageUrl, getCategories
 } from '../api';
 import { 
   User, Package, Plus, Trash2, Edit2, X, Check, 
@@ -236,18 +236,19 @@ export default function Dashboard() {
   };
 
   const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
     
     setUploading(true);
     try {
-      const result = await uploadImage(file);
-      if (result && result.url) {
+      const result = await uploadImages(files);
+      const newUrls = (result && result.urls) ? result.urls : (result && result.url ? [result.url] : []);
+      if (newUrls.length > 0) {
         const currentUrls = formData.image_urls 
           ? formData.image_urls.split(',').map(item => item.trim()).filter(Boolean) 
           : [];
-        currentUrls.push(result.url);
-        setFormData({ ...formData, image_urls: currentUrls.join(', ') });
+        const combinedUrls = [...currentUrls, ...newUrls];
+        setFormData({ ...formData, image_urls: combinedUrls.join(', ') });
       }
     } catch (err) {
       console.error(err);
@@ -465,9 +466,13 @@ export default function Dashboard() {
                           <tr key={product.id} className="hover:bg-slate-50/80 transition-colors">
                             <td className="px-6 py-4">
                               <img 
-                                src={product.image_urls?.[0] || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=100&auto=format&fit=crop&q=80'} 
+                                src={formatImageUrl(product.image_urls?.[0]) || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=100&auto=format&fit=crop&q=80'} 
                                 alt={product.name} 
                                 className="w-12 h-12 object-cover rounded-lg border border-slate-200"
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=100&auto=format&fit=crop&q=80';
+                                }}
                               />
                             </td>
                             <td className="px-6 py-4 font-semibold text-slate-900">
@@ -687,6 +692,7 @@ export default function Dashboard() {
                         <div className="relative flex items-center justify-center border-2 border-dashed border-slate-200 hover:border-amber-500 rounded-xl p-4 transition-colors bg-slate-50 cursor-pointer">
                           <input
                             type="file"
+                            multiple
                             accept="image/*"
                             onChange={handleFileChange}
                             disabled={uploading}
@@ -695,7 +701,7 @@ export default function Dashboard() {
                           <div className="text-center space-y-1">
                             <Plus className="w-6 h-6 mx-auto text-slate-400" />
                             <span className="text-xs font-medium text-slate-600 block">
-                              {uploading ? 'Đang tải lên...' : 'Chọn tệp ảnh'}
+                              {uploading ? 'Đang tải lên...' : 'Chọn một hoặc nhiều ảnh'}
                             </span>
                           </div>
                         </div>
@@ -728,7 +734,15 @@ export default function Dashboard() {
                             if (!trimmedUrl) return null;
                             return (
                               <div key={index} className="relative group w-20 h-20 border border-slate-200 rounded-lg overflow-hidden bg-slate-100">
-                                <img src={trimmedUrl} alt={`Preview ${index}`} className="w-full h-full object-cover" />
+                                <img 
+                                  src={formatImageUrl(trimmedUrl)} 
+                                  alt={`Preview ${index}`} 
+                                  className="w-full h-full object-cover" 
+                                  onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&auto=format&fit=crop&q=80';
+                                  }}
+                                />
                                 <button
                                   type="button"
                                   onClick={() => {

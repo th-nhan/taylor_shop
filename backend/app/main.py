@@ -3,7 +3,7 @@ import shutil
 import uuid
 from contextlib import asynccontextmanager
 from typing import List, Optional
-from fastapi import FastAPI, Depends, HTTPException, status, File, UploadFile
+from fastapi import FastAPI, Depends, HTTPException, status, File, UploadFile, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlmodel import SQLModel, create_engine, Session, select
@@ -72,22 +72,49 @@ def read_root():
     return {"message": "Chào mừng đến với API NHÀ MAY THÚY DIỄM!", "status": "active"}
 
 @app.post("/api/upload")
-def upload_image(file: UploadFile = File(...)):
+async def upload_image(
+    request: Request,
+    files: Optional[List[UploadFile]] = File(default=None),
+    file: Optional[UploadFile] = File(default=None)
+):
     # Tạo thư mục nếu chưa có
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     
-    # Tạo tên file độc nhất tránh trùng lặp
-    ext = os.path.splitext(file.filename)[1]
-    unique_filename = f"{uuid.uuid4()}{ext}"
-    file_path = os.path.join(UPLOAD_DIR, unique_filename)
-    
-    try:
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Không thể lưu file: {str(e)}")
+    # Xác định Base URL server (hỗ trợ cả Deploy trên Render/Railway/VPS và Localhost)
+    backend_env_url = os.getenv("BACKEND_URL") or os.getenv("PUBLIC_URL") or os.getenv("RENDER_EXTERNAL_URL")
+    if backend_env_url:
+        base_url = backend_env_url.rstrip("/")
+    else:
+        proto = request.headers.get("x-forwarded-proto") or request.url.scheme
+        host = request.headers.get("x-forwarded-host") or request.headers.get("host") or request.url.netloc
+        base_url = f"{proto}://{host}"
+
+    all_files = []
+    if files:
+        all_files.extend(files)
+    elif file:
+        all_files.append(file)
         
-    return {"url": f"http://localhost:8000/static/uploads/{unique_filename}"}
+    if not all_files:
+        raise HTTPException(status_code=400, detail="Không có tệp ảnh nào được gửi lên.")
+
+    uploaded_urls = []
+    for f in all_files:
+        ext = os.path.splitext(f.filename)[1] if f.filename else ".jpg"
+        unique_filename = f"{uuid.uuid4()}{ext}"
+        file_path = os.path.join(UPLOAD_DIR, unique_filename)
+        
+        try:
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(f.file, buffer)
+            uploaded_urls.append(f"{base_url}/static/uploads/{unique_filename}")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Không thể lưu file {f.filename}: {str(e)}")
+        
+    return {
+        "url": uploaded_urls[0] if uploaded_urls else "",
+        "urls": uploaded_urls
+    }
 
 
 # ==========================================
