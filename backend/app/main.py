@@ -90,10 +90,10 @@ async def upload_image(
         base_url = f"{proto}://{host}"
 
     all_files = []
+    if file:
+        all_files.append(file)
     if files:
         all_files.extend(files)
-    elif file:
-        all_files.append(file)
         
     if not all_files:
         raise HTTPException(status_code=400, detail="Không có tệp ảnh nào được gửi lên.")
@@ -105,8 +105,9 @@ async def upload_image(
         file_path = os.path.join(UPLOAD_DIR, unique_filename)
         
         try:
+            content = await f.read()
             with open(file_path, "wb") as buffer:
-                shutil.copyfileobj(f.file, buffer)
+                buffer.write(content)
             uploaded_urls.append(f"{base_url}/static/uploads/{unique_filename}")
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Không thể lưu file {f.filename}: {str(e)}")

@@ -101,23 +101,26 @@ export const formatImageUrl = (url) => {
   return trimmed;
 };
 
-export const uploadImages = async (fileList) => {
+export const uploadImage = async (file) => {
   const formData = new FormData();
-  const filesArray = Array.isArray(fileList) ? fileList : Array.from(fileList || []);
-  filesArray.forEach((file) => {
-    formData.append('files', file);
-  });
-  
-  const response = await api.post('/upload', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
+  formData.append('file', file);
+  const response = await api.post('/upload', formData);
   return response.data;
 };
 
-export const uploadImage = async (file) => {
-  return uploadImages([file]);
+export const uploadImages = async (fileList) => {
+  const filesArray = Array.isArray(fileList) ? fileList : Array.from(fileList || []);
+  if (filesArray.length === 0) return { urls: [], url: '' };
+
+  // Tải đồng thời tất cả các ảnh lên backend bằng Promise.all
+  const uploadPromises = filesArray.map((file) => uploadImage(file));
+  const results = await Promise.all(uploadPromises);
+
+  const urls = results.map((res) => res?.url).filter(Boolean);
+  return {
+    urls,
+    url: urls[0] || '',
+  };
 };
 
 export default api;
