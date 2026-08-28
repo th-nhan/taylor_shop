@@ -286,11 +286,13 @@ export default function App() {
         }}
       />
 
-      {/* AI Chatbox Widget */}
-      <Chatbox
-        currentUser={currentUser}
-        prefillMessage={prefillProduct}
-      />
+      {/* AI Chatbox Widget (Hidden on Dashboard) */}
+      {currentView !== 'dashboard' && (
+        <Chatbox
+          currentUser={currentUser}
+          prefillMessage={prefillProduct}
+        />
+      )}
 
     </div>
   );

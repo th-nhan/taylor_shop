@@ -7,7 +7,7 @@ import {
 import { 
   User, Package, Plus, Trash2, Edit2, X, Check, 
   RefreshCw, AlertCircle, Phone, Calendar, Shirt, Info, DollarSign, Image as ImageIcon, Pin,
-  Sparkles, Search, ChevronDown, ChevronUp, Users, Eye, PhoneCall
+  Sparkles, Search, ChevronDown, ChevronUp, Users, Eye, PhoneCall, ArrowLeft
 } from 'lucide-react';
 
 export const DESIGN_GROUPS = [
@@ -910,241 +910,277 @@ export default function Dashboard() {
       </main>
 
       {/* ========================================================================= */}
-      {/* FORM MODAL (ADD / EDIT PRODUCT) - MOBILE & DESKTOP OPTIMIZED */}
+      {/* FORM: FULL PAGE ON MOBILE, MODAL ON DESKTOP */}
       {/* ========================================================================= */}
       {isFormOpen && (
         <div 
-          className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-hidden animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 bg-slate-100 sm:bg-slate-950/80 sm:backdrop-blur-sm flex flex-col sm:items-center sm:justify-center p-0 sm:p-4 overflow-y-auto sm:overflow-hidden animate-in fade-in duration-200"
           onClick={() => setIsFormOpen(false)}
         >
           <div 
-            className="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-2xl max-h-[92vh] sm:max-h-[90vh] border border-slate-800/20 flex flex-col overflow-hidden relative animate-in slide-in-from-bottom duration-200"
+            className="w-full min-h-screen sm:min-h-0 sm:max-w-2xl sm:max-h-[90vh] bg-slate-100 sm:bg-white sm:rounded-3xl sm:shadow-2xl sm:border sm:border-slate-800/20 flex flex-col relative"
             onClick={(e) => e.stopPropagation()}
           >
             
-            {/* Modal Header */}
-            <div className="flex-shrink-0 bg-slate-900 text-white flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-800">
-              <h3 className="text-sm sm:text-lg font-bold text-white flex items-center gap-2 sm:gap-2.5">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 flex-shrink-0">
-                  <Shirt className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                </div>
-                <span className="truncate">{editingProduct ? 'Chỉnh Sửa Mẫu Thiết Kế' : 'Thêm Mẫu May Mới'}</span>
-              </h3>
+            {/* Header (Sticky top on mobile & desktop) */}
+            <div className="sticky top-0 z-30 bg-luxury-navy text-white flex items-center justify-between px-3.5 sm:px-6 py-3 sm:py-4 border-b border-indigo-950 shadow-md flex-shrink-0">
+              <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                <button 
+                  type="button"
+                  onClick={() => setIsFormOpen(false)} 
+                  className="p-1.5 -ml-1 text-slate-300 hover:text-white rounded-xl hover:bg-white/10 transition-colors flex items-center gap-1 flex-shrink-0"
+                  title="Quay lại"
+                >
+                  <ArrowLeft className="w-5 h-5 text-amber-400 sm:text-slate-300" />
+                  <span className="text-xs font-semibold text-slate-200 sm:hidden">Quay lại</span>
+                </button>
+                <div className="h-4 w-px bg-slate-700 sm:hidden flex-shrink-0"></div>
+                <h3 className="text-sm sm:text-lg font-bold text-white flex items-center gap-2 truncate">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 flex-shrink-0">
+                    <Shirt className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  </div>
+                  <span className="truncate">{editingProduct ? 'Chỉnh Sửa Mẫu Thiết Kế' : 'Thêm Mẫu May Mới'}</span>
+                </h3>
+              </div>
               <button 
                 type="button"
                 onClick={() => setIsFormOpen(false)} 
-                className="p-1.5 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors"
-                title="Đóng (Esc)"
+                className="p-1.5 text-slate-400 hover:text-white rounded-xl hover:bg-white/10 transition-colors flex-shrink-0"
+                title="Đóng"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Modal Form */}
-            <form onSubmit={handleFormSubmit} className="flex flex-col flex-1 overflow-hidden min-h-0">
-              {/* Scrollable Modal Body */}
-              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
-                  
-                  {/* Name */}
-                  <div className="col-span-1 sm:col-span-2">
-                    <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
-                      Tên Mẫu May Thiết Kế <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      placeholder="VD: Đầm Xòe Hoa Nhí Cổ V, Áo Dài Cách Tân..."
-                    />
+            {/* Form */}
+            <form onSubmit={handleFormSubmit} className="flex flex-col flex-1 min-h-0">
+              {/* Scrollable Body */}
+              <div className="flex-1 overflow-y-auto p-3.5 sm:p-6 space-y-3.5 sm:space-y-5 bg-slate-100 sm:bg-white">
+                
+                {/* Card 1: Thông tin cơ bản */}
+                <div className="bg-white rounded-2xl p-4 sm:p-0 border sm:border-none border-slate-200/90 shadow-xs sm:shadow-none space-y-3.5 sm:space-y-4">
+                  <div className="border-b border-slate-100 pb-2 sm:hidden">
+                    <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wide">
+                      1. Thông Tin Cơ Bản
+                    </span>
                   </div>
 
-                  {/* Categories selection */}
-                  <div className="col-span-1 sm:col-span-2 space-y-2">
-                    <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
-                      Danh mục sản phẩm <span className="text-red-500">*</span> (Chọn một hoặc nhiều)
-                    </label>
-                    <div className="flex flex-wrap gap-1.5 p-2.5 bg-slate-50 border border-slate-200 rounded-xl max-h-36 overflow-y-auto">
-                      {categories.map((cat) => {
-                        const isChecked = formData.categories && formData.categories.includes(cat);
-                        return (
-                          <label key={cat} className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border cursor-pointer transition-colors text-xs font-semibold ${
-                            isChecked 
-                              ? 'bg-amber-500/15 border-amber-500 text-amber-950 shadow-xs' 
-                              : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
-                          }`}>
-                            <input
-                              type="checkbox"
-                              className="hidden"
-                              checked={isChecked}
-                              onChange={() => {
-                                const currentCats = formData.categories || [];
-                                if (currentCats.includes(cat)) {
-                                  setFormData({ ...formData, categories: currentCats.filter(c => c !== cat) });
-                                } else {
-                                  setFormData({ ...formData, categories: [...currentCats, cat] });
-                                }
-                              }}
-                            />
-                            {isChecked && <Check className="w-3 h-3 text-amber-600 stroke-[3]" />}
-                            <span>{cat}</span>
-                          </label>
-                        );
-                      })}
-                    </div>
-
-                    {/* Add New Category Box */}
-                    <div className="flex items-center gap-2 mt-2">
-                      <input
-                        type="text"
-                        value={newCategoryName}
-                        onChange={(e) => setNewCategoryName(e.target.value)}
-                        className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-amber-500"
-                        placeholder="Nhập tên danh mục mới..."
-                      />
-                      <button
-                        type="button"
-                        onClick={handleAddNewCategory}
-                        className="px-3.5 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-700 transition-colors whitespace-nowrap active:scale-95"
-                      >
-                        + Thêm
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Target Gender */}
-                  <div>
-                    <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
-                      Giới tính may đo <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      value={formData.target_gender}
-                      onChange={(e) => setFormData({ ...formData, target_gender: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-500"
-                    >
-                      <option value="Nữ">Nữ</option>
-                      <option value="Nam">Nam</option>
-                      <option value="Cả nam lẫn nữ">Cả nam lẫn nữ</option>
-                    </select>
-                  </div>
-
-                  {/* Price Estimate */}
-                  <div>
-                    <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
-                      Ước tính giá may <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <DollarSign className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+                    {/* Name */}
+                    <div className="col-span-1 sm:col-span-2">
+                      <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                        Tên Mẫu May Thiết Kế <span className="text-red-500">*</span>
+                      </label>
                       <input
                         type="text"
                         required
-                        value={formData.price_estimate}
-                        onChange={(e) => setFormData({ ...formData, price_estimate: e.target.value })}
-                        className="w-full pl-9 pr-3.5 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-500"
-                        placeholder="VD: 350.000đ - 450.000đ"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                        placeholder="VD: Đầm Xòe Hoa Nhí Cổ V, Áo Dài Cách Tân..."
                       />
                     </div>
-                  </div>
 
-                  {/* Pinned toggle */}
-                  <div className="col-span-1 sm:col-span-2 flex items-center space-x-2.5 bg-amber-50/70 border border-amber-200/80 rounded-xl p-3">
-                    <input
-                      type="checkbox"
-                      id="is_pinned"
-                      checked={formData.is_pinned}
-                      onChange={(e) => setFormData({ ...formData, is_pinned: e.target.checked })}
-                      className="w-4 h-4 text-amber-600 border-slate-300 rounded focus:ring-amber-500 cursor-pointer"
-                    />
-                    <label htmlFor="is_pinned" className="text-xs font-bold text-slate-800 uppercase cursor-pointer select-none">
-                      Ghim mẫu may nổi bật lên đầu trang chủ
-                    </label>
-                  </div>
-
-                  {/* Image Upload & Link */}
-                  <div className="col-span-1 sm:col-span-2 space-y-3">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {/* File Upload */}
-                      <div>
-                        <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Tải ảnh từ điện thoại / máy tính</label>
-                        <div className="relative flex items-center justify-center border-2 border-dashed border-slate-200 hover:border-amber-500 rounded-xl p-4 transition-colors bg-slate-50 cursor-pointer">
-                          <input
-                            type="file"
-                            multiple
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            disabled={uploading}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                          />
-                          <div className="text-center space-y-1">
-                            <Plus className="w-5 h-5 mx-auto text-amber-600" />
-                            <span className="text-xs font-semibold text-slate-700 block">
-                              {uploading ? 'Đang tải ảnh...' : 'Chọn một hoặc nhiều ảnh'}
-                            </span>
-                          </div>
-                        </div>
+                    {/* Categories selection */}
+                    <div className="col-span-1 sm:col-span-2 space-y-2">
+                      <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                        Danh mục sản phẩm <span className="text-red-500">*</span> (Chọn một hoặc nhiều)
+                      </label>
+                      <div className="flex flex-wrap gap-1.5 p-2.5 bg-slate-50 border border-slate-200 rounded-xl max-h-36 overflow-y-auto">
+                        {categories.map((cat) => {
+                          const isChecked = formData.categories && formData.categories.includes(cat);
+                          return (
+                            <label key={cat} className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border cursor-pointer transition-colors text-xs font-semibold ${
+                              isChecked 
+                                ? 'bg-amber-500/15 border-amber-500 text-amber-950 shadow-xs' 
+                                : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                            }`}>
+                              <input
+                                type="checkbox"
+                                className="hidden"
+                                checked={isChecked}
+                                onChange={() => {
+                                  const currentCats = formData.categories || [];
+                                  if (currentCats.includes(cat)) {
+                                    setFormData({ ...formData, categories: currentCats.filter(c => c !== cat) });
+                                  } else {
+                                    setFormData({ ...formData, categories: [...currentCats, cat] });
+                                  }
+                                }}
+                              />
+                              {isChecked && <Check className="w-3 h-3 text-amber-600 stroke-[3]" />}
+                              <span>{cat}</span>
+                            </label>
+                          );
+                        })}
                       </div>
 
-                      {/* Image Link Input */}
-                      <div>
-                        <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Hoặc nhập Link ảnh web</label>
-                        <div className="relative">
-                          <ImageIcon className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                          <input
-                            type="text"
-                            value={formData.image_urls}
-                            onChange={(e) => setFormData({ ...formData, image_urls: e.target.value })}
-                            className="w-full pl-9 pr-3.5 py-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-amber-500"
-                            placeholder="VD: http://anh1.jpg, http://anh2.jpg"
-                          />
-                        </div>
-                        <p className="text-[10px] text-slate-400 mt-1">Nhiều link cách nhau bằng dấu phẩy</p>
+                      {/* Add New Category Box */}
+                      <div className="flex items-center gap-2 mt-2">
+                        <input
+                          type="text"
+                          value={newCategoryName}
+                          onChange={(e) => setNewCategoryName(e.target.value)}
+                          className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-amber-500"
+                          placeholder="Nhập tên danh mục mới..."
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAddNewCategory}
+                          className="px-3.5 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-700 transition-colors whitespace-nowrap active:scale-95"
+                        >
+                          + Thêm
+                        </button>
                       </div>
                     </div>
 
-                    {/* Previews */}
-                    {formData.image_urls && (
-                      <div className="space-y-1.5">
-                        <label className="block text-[11px] font-bold text-slate-500 uppercase">
-                          Ảnh đã chọn ({formData.image_urls.split(',').map(u => u.trim()).filter(Boolean).length})
-                        </label>
-                        <div className="flex flex-wrap gap-2">
-                          {formData.image_urls.split(',').map((url, index) => {
-                            const trimmedUrl = url.trim();
-                            if (!trimmedUrl) return null;
-                            return (
-                              <div key={index} className="relative group w-16 h-16 sm:w-20 sm:h-20 border border-slate-200 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
-                                <img 
-                                  src={formatImageUrl(trimmedUrl)} 
-                                  alt={`Preview ${index}`} 
-                                  className="w-full h-full object-cover" 
-                                  onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&auto=format&fit=crop&q=80';
-                                  }}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const list = formData.image_urls.split(',').map(u => u.trim()).filter(Boolean);
-                                    list.splice(index, 1);
-                                    setFormData({ ...formData, image_urls: list.join(', ') });
-                                  }}
-                                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
-                                >
-                                  <X className="w-3 h-3" />
-                                </button>
-                              </div>
-                            );
-                          })}
+                    {/* Target Gender */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                        Giới tính may đo <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        value={formData.target_gender}
+                        onChange={(e) => setFormData({ ...formData, target_gender: e.target.value })}
+                        className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-500"
+                      >
+                        <option value="Nữ">Nữ</option>
+                        <option value="Nam">Nam</option>
+                        <option value="Cả nam lẫn nữ">Cả nam lẫn nữ</option>
+                      </select>
+                    </div>
+
+                    {/* Price Estimate */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
+                        Ước tính giá may <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <DollarSign className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="text"
+                          required
+                          value={formData.price_estimate}
+                          onChange={(e) => setFormData({ ...formData, price_estimate: e.target.value })}
+                          className="w-full pl-9 pr-3.5 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-500"
+                          placeholder="VD: 350.000đ - 450.000đ"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Pinned toggle */}
+                    <div className="col-span-1 sm:col-span-2 flex items-center space-x-2.5 bg-amber-50/70 border border-amber-200/80 rounded-xl p-3">
+                      <input
+                        type="checkbox"
+                        id="is_pinned"
+                        checked={formData.is_pinned}
+                        onChange={(e) => setFormData({ ...formData, is_pinned: e.target.checked })}
+                        className="w-4 h-4 text-amber-600 border-slate-300 rounded focus:ring-amber-500 cursor-pointer"
+                      />
+                      <label htmlFor="is_pinned" className="text-xs font-bold text-slate-800 uppercase cursor-pointer select-none">
+                        Ghim mẫu may nổi bật lên đầu trang chủ
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card 2: Hình ảnh mẫu may */}
+                <div className="bg-white rounded-2xl p-4 sm:p-0 border sm:border-none border-slate-200/90 shadow-xs sm:shadow-none space-y-3">
+                  <div className="border-b border-slate-100 pb-2 sm:hidden">
+                    <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wide">
+                      2. Hình Ảnh Mẫu May
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* File Upload */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Tải ảnh từ điện thoại / máy tính</label>
+                      <div className="relative flex items-center justify-center border-2 border-dashed border-slate-200 hover:border-amber-500 rounded-xl p-4 transition-colors bg-slate-50 cursor-pointer">
+                        <input
+                          type="file"
+                          multiple
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          disabled={uploading}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        />
+                        <div className="text-center space-y-1">
+                          <Plus className="w-5 h-5 mx-auto text-amber-600" />
+                          <span className="text-xs font-semibold text-slate-700 block">
+                            {uploading ? 'Đang tải ảnh...' : 'Chọn một hoặc nhiều ảnh'}
+                          </span>
                         </div>
                       </div>
-                    )}
+                    </div>
+
+                    {/* Image Link Input */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Hoặc nhập Link ảnh web</label>
+                      <div className="relative">
+                        <ImageIcon className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="text"
+                          value={formData.image_urls}
+                          onChange={(e) => setFormData({ ...formData, image_urls: e.target.value })}
+                          className="w-full pl-9 pr-3.5 py-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-amber-500"
+                          placeholder="VD: http://anh1.jpg, http://anh2.jpg"
+                        />
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-1">Nhiều link cách nhau bằng dấu phẩy</p>
+                    </div>
+                  </div>
+
+                  {/* Previews */}
+                  {formData.image_urls && (
+                    <div className="space-y-1.5 pt-1">
+                      <label className="block text-[11px] font-bold text-slate-500 uppercase">
+                        Ảnh đã chọn ({formData.image_urls.split(',').map(u => u.trim()).filter(Boolean).length})
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {formData.image_urls.split(',').map((url, index) => {
+                          const trimmedUrl = url.trim();
+                          if (!trimmedUrl) return null;
+                          return (
+                            <div key={index} className="relative group w-16 h-16 sm:w-20 sm:h-20 border border-slate-200 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
+                              <img 
+                                src={formatImageUrl(trimmedUrl)} 
+                                alt={`Preview ${index}`} 
+                                className="w-full h-full object-cover" 
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&auto=format&fit=crop&q=80';
+                                }}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const list = formData.image_urls.split(',').map(u => u.trim()).filter(Boolean);
+                                  list.splice(index, 1);
+                                  setFormData({ ...formData, image_urls: list.join(', ') });
+                                }}
+                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Card 3: Mô tả & Chất liệu vải */}
+                <div className="bg-white rounded-2xl p-4 sm:p-0 border sm:border-none border-slate-200/90 shadow-xs sm:shadow-none space-y-3.5">
+                  <div className="border-b border-slate-100 pb-2 sm:hidden">
+                    <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wide">
+                      3. Mô Tả & Chất Liệu Vải
+                    </span>
                   </div>
 
                   {/* Description */}
-                  <div className="col-span-1 sm:col-span-2">
+                  <div>
                     <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
                       Mô tả kiểu dáng & Điểm nổi bật <span className="text-red-500">*</span>
                     </label>
@@ -1158,99 +1194,8 @@ export default function Dashboard() {
                     />
                   </div>
 
-                  {/* Garment Design Characteristics Accordion */}
-                  <div className="col-span-1 sm:col-span-2 border-t border-slate-200/80 pt-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="block text-xs font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
-                          <Sparkles className="w-4 h-4 text-amber-500" />
-                          Thông Số & Đặc Điểm Thiết Kế May Đo
-                        </span>
-                        <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5">
-                          Chạm vào từng nhóm để điền chi tiết phom dáng, cổ, tay, khóa và kỹ thuật may.
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Accordion Groups */}
-                    <div className="space-y-2 pt-1">
-                      {DESIGN_GROUPS.map((group) => {
-                        const GroupIcon = group.icon;
-                        const isExpanded = !!expandedGroups[group.id];
-                        
-                        // Count filled fields in this group
-                        const filledCount = group.fields.filter(f => (formData.design_details[f.key] || '').trim()).length;
-
-                        return (
-                          <div 
-                            key={group.id} 
-                            className={`border rounded-2xl transition-all duration-200 overflow-hidden ${
-                              isExpanded ? 'bg-white border-amber-300 shadow-xs' : 'bg-slate-50/80 border-slate-200 hover:bg-slate-100/80'
-                            }`}
-                          >
-                            <button
-                              type="button"
-                              onClick={() => toggleGroup(group.id)}
-                              className="w-full px-3.5 py-3 flex items-center justify-between text-left gap-2"
-                            >
-                              <div className="flex items-center space-x-2.5 min-w-0">
-                                <div className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                                  isExpanded ? 'bg-amber-500 text-slate-950' : 'bg-slate-200 text-slate-600'
-                                }`}>
-                                  <GroupIcon className="w-3.5 h-3.5" />
-                                </div>
-                                <div className="min-w-0">
-                                  <h5 className="text-xs font-bold text-slate-900 truncate">{group.title}</h5>
-                                  {group.subtitle && (
-                                    <p className="text-[10px] text-slate-500 truncate hidden sm:block">{group.subtitle}</p>
-                                  )}
-                                </div>
-                              </div>
-
-                              <div className="flex items-center space-x-2 flex-shrink-0">
-                                {filledCount > 0 && (
-                                  <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full border border-emerald-200">
-                                    {filledCount}/{group.fields.length}
-                                  </span>
-                                )}
-                                {isExpanded ? (
-                                  <ChevronUp className="w-4 h-4 text-slate-400" />
-                                ) : (
-                                  <ChevronDown className="w-4 h-4 text-slate-400" />
-                                )}
-                              </div>
-                            </button>
-
-                            {isExpanded && (
-                              <div className="px-3.5 pb-3.5 pt-1 border-t border-slate-100 bg-white grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                {group.fields.map((field) => (
-                                  <div key={field.key}>
-                                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                                      {field.key}
-                                    </label>
-                                    <input
-                                      type="text"
-                                      value={formData.design_details[field.key] || ''}
-                                      onChange={(e) => {
-                                        const newDetails = { ...formData.design_details };
-                                        newDetails[field.key] = e.target.value;
-                                        setFormData({ ...formData, design_details: newDetails });
-                                      }}
-                                      className="w-full px-3 py-2 bg-slate-50/50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-amber-500 focus:bg-white focus:ring-1 focus:ring-amber-500"
-                                      placeholder={field.placeholder}
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
                   {/* Fabric Recommendations */}
-                  <div className="col-span-1 sm:col-span-2">
+                  <div>
                     <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Loại vải đề xuất (phân cách bằng dấu phẩy)</label>
                     <input
                       type="text"
@@ -1261,20 +1206,112 @@ export default function Dashboard() {
                     />
                   </div>
                 </div>
+
+                {/* Card 4: Garment Design Characteristics Accordion */}
+                <div className="bg-white rounded-2xl p-4 sm:p-0 border sm:border-none border-slate-200/90 shadow-xs sm:shadow-none space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2 sm:border-none sm:pb-0">
+                    <div>
+                      <span className="block text-xs font-extrabold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
+                        <Sparkles className="w-4 h-4 text-amber-500" />
+                        4. Thông Số & Đặc Điểm Thiết Kế May Đo
+                      </span>
+                      <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5">
+                        Chạm vào từng nhóm để điền chi tiết phom dáng, cổ, tay, khóa và kỹ thuật may.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Accordion Groups */}
+                  <div className="space-y-2 pt-1">
+                    {DESIGN_GROUPS.map((group) => {
+                      const GroupIcon = group.icon;
+                      const isExpanded = !!expandedGroups[group.id];
+                      
+                      // Count filled fields in this group
+                      const filledCount = group.fields.filter(f => (formData.design_details[f.key] || '').trim()).length;
+
+                      return (
+                        <div 
+                          key={group.id} 
+                          className={`border rounded-2xl transition-all duration-200 overflow-hidden ${
+                            isExpanded ? 'bg-white border-amber-300 shadow-xs' : 'bg-slate-50/80 border-slate-200 hover:bg-slate-100/80'
+                          }`}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => toggleGroup(group.id)}
+                            className="w-full px-3.5 py-3 flex items-center justify-between text-left gap-2"
+                          >
+                            <div className="flex items-center space-x-2.5 min-w-0">
+                              <div className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                                isExpanded ? 'bg-amber-500 text-slate-950' : 'bg-slate-200 text-slate-600'
+                              }`}>
+                                <GroupIcon className="w-3.5 h-3.5" />
+                              </div>
+                              <div className="min-w-0">
+                                <h5 className="text-xs font-bold text-slate-900 truncate">{group.title}</h5>
+                                {group.subtitle && (
+                                  <p className="text-[10px] text-slate-500 truncate hidden sm:block">{group.subtitle}</p>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="flex items-center space-x-2 flex-shrink-0">
+                              {filledCount > 0 && (
+                                <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full border border-emerald-200">
+                                  {filledCount}/{group.fields.length}
+                                </span>
+                              )}
+                              {isExpanded ? (
+                                <ChevronUp className="w-4 h-4 text-slate-400" />
+                              ) : (
+                                <ChevronDown className="w-4 h-4 text-slate-400" />
+                              )}
+                            </div>
+                          </button>
+
+                          {isExpanded && (
+                            <div className="px-3.5 pb-3.5 pt-1 border-t border-slate-100 bg-white grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                              {group.fields.map((field) => (
+                                <div key={field.key}>
+                                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                                    {field.key}
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={formData.design_details[field.key] || ''}
+                                    onChange={(e) => {
+                                      const newDetails = { ...formData.design_details };
+                                      newDetails[field.key] = e.target.value;
+                                      setFormData({ ...formData, design_details: newDetails });
+                                    }}
+                                    className="w-full px-3 py-2 bg-slate-50/50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-amber-500 focus:bg-white focus:ring-1 focus:ring-amber-500"
+                                    placeholder={field.placeholder}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
               </div>
 
-              {/* Modal Sticky Footer */}
-              <div className="flex-shrink-0 bg-slate-50 border-t border-slate-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-end space-x-2.5 shadow-lg">
+              {/* Sticky Action Footer */}
+              <div className="sticky bottom-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-end space-x-2.5 shadow-lg flex-shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsFormOpen(false)}
-                  className="px-3.5 sm:px-4 py-2 border border-slate-200 hover:bg-white text-slate-700 rounded-xl font-semibold text-xs sm:text-sm transition-colors"
+                  className="px-4 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-semibold text-xs sm:text-sm transition-colors"
                 >
                   Hủy bỏ
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center space-x-1.5 px-4 sm:px-5 py-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 rounded-xl font-extrabold text-xs sm:text-sm shadow-md hover:shadow-amber-500/20 active:scale-95 transition-all duration-200"
+                  className="flex items-center space-x-1.5 px-5 py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 rounded-xl font-extrabold text-xs sm:text-sm shadow-md hover:shadow-amber-500/20 active:scale-95 transition-all duration-200"
                 >
                   <Check className="w-4 h-4 stroke-[3]" />
                   <span>{editingProduct ? 'Lưu Thay Đổi' : 'Thêm Mẫu'}</span>
@@ -1287,3 +1324,4 @@ export default function Dashboard() {
     </div>
   );
 }
+
