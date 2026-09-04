@@ -86,11 +86,19 @@ export const formatImageUrl = (url) => {
   const trimmed = url.trim();
   if (!trimmed) return '';
   
+  // Nếu là Data URL (Base64) - đã được nhúng trực tiếp, an toàn tuyệt đối
+  if (trimmed.startsWith('data:image/')) {
+    return trimmed;
+  }
+
   const backendBase = getBackendBaseUrl();
 
-  // Nếu là relative path /static/...
+  // Nếu là relative path /static/... hoặc static/...
   if (trimmed.startsWith('/static/')) {
     return `${backendBase}${trimmed}`;
+  }
+  if (trimmed.startsWith('static/')) {
+    return `${backendBase}/${trimmed}`;
   }
   
   // Nếu url ảnh cũ bị hardcode localhost:8000 nhưng đang kết nối server deploy
@@ -101,10 +109,76 @@ export const formatImageUrl = (url) => {
   return trimmed;
 };
 
+/**
+ * Nén ảnh trước khi upload để tăng tốc độ tải, tránh lỗi vượt quá dung lượng (413 Payload Too Large)
+ * và tối ưu bộ nhớ.
+ */
+export const compressImageFile = (file, maxWidth = 1600, quality = 0.82) => {
+  return new Promise((resolve) => {
+    // Nếu không phải ảnh (hoặc là svg/gif) thì giữ nguyên
+    if (!file || !file.type.startsWith('image/') || file.type === 'image/svg+xml' || file.type === 'image/gif') {
+      return resolve(file);
+    }
+
+    // Nếu ảnh quá nhỏ (< 150KB) thì không cần nén
+    if (file.size <= 150 * 1024) {
+      return resolve(file);
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth || height > maxWidth) {
+          if (width > height) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxWidth) / height);
+            height = maxWidth;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob && blob.size < file.size) {
+              const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                type: 'image/jpeg',
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            } else {
+              resolve(file);
+            }
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+      img.onerror = () => resolve(file);
+    };
+    reader.onerror = () => resolve(file);
+  });
+};
+
 export const uploadImage = async (file) => {
+  // Nén ảnh trước khi gửi đi
+  const optimizedFile = await compressImageFile(file);
   const formData = new FormData();
-  formData.append('file', file);
-  formData.append('files', file);
+  formData.append('file', optimizedFile);
+  formData.append('files', optimizedFile);
+  
   const response = await api.post('/upload', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -129,6 +203,7 @@ export const uploadImages = async (fileList) => {
 };
 
 export default api;
+
 
 
 

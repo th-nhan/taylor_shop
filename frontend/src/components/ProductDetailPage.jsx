@@ -315,6 +315,10 @@ export default function ProductDetailPage({ product, allProducts = [], onBack, o
               <img
                 src={images[activeImageIndex]}
                 alt={name}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&auto=format&fit=crop&q=80';
+                }}
                 onClick={() => {
                   setIsLightboxOpen(true);
                   handleResetZoom();
@@ -402,7 +406,15 @@ export default function ProductDetailPage({ product, allProducts = [], onBack, o
                           : 'border-slate-200 hover:border-slate-300 opacity-70 hover:opacity-100'
                       }`}
                     >
-                      <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                      <img 
+                        src={img} 
+                        alt={`Thumbnail ${idx + 1}`} 
+                        className="w-full h-full object-cover" 
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&auto=format&fit=crop&q=80';
+                        }}
+                      />
                     </button>
                   );
                 })}
@@ -677,6 +689,10 @@ export default function ProductDetailPage({ product, allProducts = [], onBack, o
                 src={images[activeImageIndex]}
                 alt={name}
                 draggable="false"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=1200&auto=format&fit=crop&q=80';
+                }}
                 className="max-w-full max-h-[82vh] object-contain pointer-events-none select-none drop-shadow-2xl"
               />
             </div>

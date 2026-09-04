@@ -71,16 +71,15 @@ app.add_middleware(
 def read_root():
     return {"message": "Chào mừng đến với API NHÀ MAY THÚY DIỄM!", "status": "active"}
 
+from app.uploader import process_and_store_image
+
 @app.post("/api/upload")
 async def upload_image(
     request: Request,
     files: Optional[List[UploadFile]] = File(default=None),
     file: Optional[UploadFile] = File(default=None)
 ):
-    # Tạo thư mục nếu chưa có
-    os.makedirs(UPLOAD_DIR, exist_ok=True)
-    
-    # Xác định Base URL server (hỗ trợ cả Deploy trên Render/Railway/VPS và Localhost)
+    # Cấu hình Base URL server
     backend_env_url = os.getenv("BACKEND_URL") or os.getenv("PUBLIC_URL") or os.getenv("RENDER_EXTERNAL_URL")
     if backend_env_url:
         base_url = backend_env_url.rstrip("/")
@@ -115,17 +114,19 @@ async def upload_image(
 
     uploaded_urls = []
     for f in all_files:
-        ext = os.path.splitext(f.filename)[1] if f.filename else ".jpg"
-        unique_filename = f"{uuid.uuid4()}{ext}"
-        file_path = os.path.join(UPLOAD_DIR, unique_filename)
-        
         try:
             content = await f.read()
-            with open(file_path, "wb") as buffer:
-                buffer.write(content)
-            uploaded_urls.append(f"{base_url}/static/uploads/{unique_filename}")
+            filename = f.filename or "image.jpg"
+            stored_url = process_and_store_image(
+                image_bytes=content,
+                filename=filename,
+                upload_dir=UPLOAD_DIR,
+                base_url=base_url
+            )
+            if stored_url:
+                uploaded_urls.append(stored_url)
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Không thể lưu file {f.filename}: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Không thể xử lý và lưu ảnh {f.filename}: {str(e)}")
         
     return {
         "url": uploaded_urls[0] if uploaded_urls else "",

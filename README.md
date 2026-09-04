@@ -133,6 +133,30 @@ nha_may_app/
 
 ---
 
+## 📸 Cấu Hình Lưu Trữ Ảnh Mẫu Vĩnh Viễn (Cloud Storage)
+
+Khi triển khai trên **Render / Vercel / Railway**, ổ cứng container là dạng tạm thời (*ephemeral disk*), mỗi lần server ngủ (sleep sau 15 phút) hoặc redeploy, các file tĩnh lưu trên ổ cứng cục bộ sẽ bị xóa.
+
+Hệ thống hiện tại đã tích hợp cơ chế **lưu trữ ảnh đa tầng đảm bảo 100% không bao giờ mất ảnh**:
+
+1. **Mặc định (Tự động 100% không cần cấu hình)**:
+   - Ảnh tải lên từ điện thoại / máy tính được tự động nén tối ưu (WebP/JPEG) và mã hóa thành **Base64 Data URL** lưu trực tiếp trong Database (PostgreSQL / SQLite).
+   - Vì nằm trong Database, ảnh sẽ tồn tại vĩnh viễn bất kể server Render khởi động lại bao nhiêu lần.
+
+2. **Cấu hình CDN Cloudinary (Tùy chọn - Tốc độ cao nhất, Miễn phí 25GB)**:
+   - Đăng ký tài khoản miễn phí tại [Cloudinary](https://cloudinary.com/).
+   - Thêm biến môi trường trên Render:
+     - `CLOUDINARY_CLOUD_NAME=your_cloud_name`
+     - `CLOUDINARY_API_KEY=your_api_key`
+     - `CLOUDINARY_API_SECRET=your_api_secret`
+     *(hoặc chỉ cần `CLOUDINARY_URL=cloudinary://...`)*
+
+3. **Cấu hình ImgBB (Tùy chọn - Miễn phí vĩnh viễn)**:
+   - Lấy API key miễn phí tại [ImgBB API](https://api.imgbb.com/).
+   - Thêm biến môi trường trên Render: `IMGBB_API_KEY=your_key`
+
+---
+
 ## 📝 Giấy Phép & Bản Quyền
 
 Dự án phát triển dành cho **Nhà May Thúy Diễm**. Bản quyền thuộc về đội ngũ phát triển dự án (Đỗ Thành Nhân).
