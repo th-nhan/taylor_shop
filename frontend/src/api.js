@@ -177,7 +177,6 @@ export const uploadImage = async (file) => {
   const optimizedFile = await compressImageFile(file);
   const formData = new FormData();
   formData.append('file', optimizedFile);
-  formData.append('files', optimizedFile);
   
   const response = await api.post('/upload', formData, {
     headers: {

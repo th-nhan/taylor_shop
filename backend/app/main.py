@@ -91,7 +91,7 @@ async def upload_image(
     all_files = []
     if file:
         all_files.append(file)
-    if files:
+    elif files:
         all_files.extend(files)
         
     # Fallback đọc từ request.form() nếu FastAPI không bind tự động

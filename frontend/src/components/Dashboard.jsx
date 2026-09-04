@@ -92,6 +92,7 @@ export default function Dashboard() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [linkInput, setLinkInput] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     categories: [],
@@ -100,7 +101,7 @@ export default function Dashboard() {
     description: '',
     design_details: { ...INITIAL_DESIGN_DETAILS },
     fabric_recommendations: '',
-    image_urls: '',
+    image_urls: [],
     is_pinned: false
   });
 
@@ -190,6 +191,7 @@ export default function Dashboard() {
   const handleOpenCreate = () => {
     setEditingProduct(null);
     setNewCategoryName('');
+    setLinkInput('');
     setFormData({
       name: '',
       categories: categories.length > 0 ? [categories[0]] : ['Đầm'],
@@ -198,7 +200,7 @@ export default function Dashboard() {
       description: '',
       design_details: { ...INITIAL_DESIGN_DETAILS },
       fabric_recommendations: '',
-      image_urls: '',
+      image_urls: [],
       is_pinned: false
     });
     setExpandedGroups({
@@ -214,6 +216,7 @@ export default function Dashboard() {
   const handleOpenEdit = (product) => {
     setEditingProduct(product);
     setNewCategoryName('');
+    setLinkInput('');
 
     const mergedDetails = { ...INITIAL_DESIGN_DETAILS };
     if (product.design_details) {
@@ -232,6 +235,10 @@ export default function Dashboard() {
       Object.assign(mergedDetails, product.design_details);
     }
 
+    const rawImageUrls = Array.isArray(product.image_urls)
+      ? product.image_urls
+      : (product.image_urls ? [product.image_urls] : []);
+
     setFormData({
       name: product.name || '',
       categories: product.categories || [],
@@ -240,7 +247,7 @@ export default function Dashboard() {
       description: product.description || '',
       design_details: mergedDetails,
       fabric_recommendations: product.fabric_recommendations ? product.fabric_recommendations.join(', ') : '',
-      image_urls: product.image_urls ? product.image_urls.join(', ') : '',
+      image_urls: rawImageUrls,
       is_pinned: product.is_pinned || false
     });
     setExpandedGroups({
@@ -260,13 +267,15 @@ export default function Dashboard() {
     setUploading(true);
     try {
       const result = await uploadImages(files);
-      const newUrls = (result && result.urls) ? result.urls : (result && result.url ? [result.url] : []);
+      const newUrls = (result && Array.isArray(result.urls) && result.urls.length > 0)
+        ? result.urls 
+        : (result && result.url ? [result.url] : []);
+
       if (newUrls.length > 0) {
-        const currentUrls = formData.image_urls 
-          ? formData.image_urls.split(',').map(item => item.trim()).filter(Boolean) 
-          : [];
-        const combinedUrls = [...currentUrls, ...newUrls];
-        setFormData({ ...formData, image_urls: combinedUrls.join(', ') });
+        setFormData(prev => ({
+          ...prev,
+          image_urls: [...(Array.isArray(prev.image_urls) ? prev.image_urls : []), ...newUrls]
+        }));
       }
     } catch (err) {
       console.error(err);
@@ -275,6 +284,16 @@ export default function Dashboard() {
       setUploading(false);
       e.target.value = '';
     }
+  };
+
+  const handleAddImageUrl = () => {
+    const trimmed = linkInput.trim();
+    if (!trimmed) return;
+    setFormData(prev => ({
+      ...prev,
+      image_urls: [...(Array.isArray(prev.image_urls) ? prev.image_urls : []), trimmed]
+    }));
+    setLinkInput('');
   };
 
   const handleAddNewCategory = () => {
@@ -304,8 +323,8 @@ export default function Dashboard() {
         fabric_recommendations: formData.fabric_recommendations
           ? formData.fabric_recommendations.split(',').map(item => item.trim()).filter(Boolean)
           : [],
-        image_urls: formData.image_urls
-          ? formData.image_urls.split(',').map(item => item.trim()).filter(Boolean)
+        image_urls: (Array.isArray(formData.image_urls) && formData.image_urls.length > 0)
+          ? formData.image_urls
           : ['https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&auto=format&fit=crop&q=80']
       };
 
@@ -1116,35 +1135,58 @@ export default function Dashboard() {
 
                     {/* Image Link Input */}
                     <div>
-                      <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Hoặc nhập Link ảnh web</label>
-                      <div className="relative">
-                        <ImageIcon className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                        <input
-                          type="text"
-                          value={formData.image_urls}
-                          onChange={(e) => setFormData({ ...formData, image_urls: e.target.value })}
-                          className="w-full pl-9 pr-3.5 py-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-amber-500"
-                          placeholder="VD: http://anh1.jpg, http://anh2.jpg"
-                        />
+                      <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Hoặc dán Link ảnh web</label>
+                      <div className="flex gap-2">
+                        <div className="relative flex-1">
+                          <ImageIcon className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                          <input
+                            type="text"
+                            value={linkInput}
+                            onChange={(e) => setLinkInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleAddImageUrl();
+                              }
+                            }}
+                            className="w-full pl-9 pr-3.5 py-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-amber-500"
+                            placeholder="Dán link ảnh (https://...)"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleAddImageUrl}
+                          className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors flex-shrink-0"
+                        >
+                          Thêm
+                        </button>
                       </div>
-                      <p className="text-[10px] text-slate-400 mt-1">Nhiều link cách nhau bằng dấu phẩy</p>
+                      <p className="text-[10px] text-slate-400 mt-1">Dán link rồi bấm "Thêm" hoặc nhấn phím Enter</p>
                     </div>
                   </div>
 
                   {/* Previews */}
-                  {formData.image_urls && (
+                  {Array.isArray(formData.image_urls) && formData.image_urls.length > 0 && (
                     <div className="space-y-1.5 pt-1">
-                      <label className="block text-[11px] font-bold text-slate-500 uppercase">
-                        Ảnh đã chọn ({formData.image_urls.split(',').map(u => u.trim()).filter(Boolean).length})
-                      </label>
+                      <div className="flex items-center justify-between">
+                        <label className="block text-[11px] font-bold text-slate-500 uppercase">
+                          Ảnh đã chọn ({formData.image_urls.length})
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, image_urls: [] }))}
+                          className="text-[10px] text-red-500 hover:underline font-semibold"
+                        >
+                          Xóa tất cả ảnh
+                        </button>
+                      </div>
                       <div className="flex flex-wrap gap-2">
-                        {formData.image_urls.split(',').map((url, index) => {
-                          const trimmedUrl = url.trim();
-                          if (!trimmedUrl) return null;
+                        {formData.image_urls.map((url, index) => {
+                          if (!url) return null;
                           return (
-                            <div key={index} className="relative group w-16 h-16 sm:w-20 sm:h-20 border border-slate-200 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
+                            <div key={index} className="relative group w-16 h-16 sm:w-20 sm:h-20 border border-slate-200 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 shadow-xs">
                               <img 
-                                src={formatImageUrl(trimmedUrl)} 
+                                src={formatImageUrl(url)} 
                                 alt={`Preview ${index}`} 
                                 className="w-full h-full object-cover" 
                                 onError={(e) => {
@@ -1155,11 +1197,13 @@ export default function Dashboard() {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  const list = formData.image_urls.split(',').map(u => u.trim()).filter(Boolean);
-                                  list.splice(index, 1);
-                                  setFormData({ ...formData, image_urls: list.join(', ') });
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    image_urls: prev.image_urls.filter((_, idx) => idx !== index)
+                                  }));
                                 }}
                                 className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
+                                title="Xóa ảnh này"
                               >
                                 <X className="w-3 h-3" />
                               </button>
