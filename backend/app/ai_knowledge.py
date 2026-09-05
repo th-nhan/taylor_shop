@@ -10,8 +10,9 @@ from app.models import Product
 
 STORE_INFO = {
     "name": "Nhà May Thúy Diễm",
-    "address": "Số 123 Đường Thời Trang, Phường May Đo, TP. Hồ Chí Minh",
-    "phone": "0988.123.456 / 0909.888.999",
+    "address": "676, đường 3 bông, xã Phước Lý, tỉnh Tây Ninh",
+    "phone": "0901.370.622",
+    "zalo_url": "https://zalo.me/0901370622",
     "open_hours": "08:00 - 21:00 (Tất cả các ngày trong tuần, kể cả Chủ Nhật và ngày lễ)",
     "policy": "Bảo hành chỉnh sửa miễn phí trọn đời đường may và hỗ trợ bóp/nới theo số đo khách hàng."
 }
@@ -144,6 +145,65 @@ def find_matching_products(query: str, session: Session) -> List[Product]:
     return matched[:3]
 
 
+def find_best_matching_product(query: str, all_products: List[Product]) -> Optional[Product]:
+    """Tìm sản phẩm khớp tốt nhất với câu hỏi dựa trên tên, danh mục và giới tính."""
+    q_lower = query.lower().strip()
+    cleaned_q = re.sub(r'^(tư vấn|tư vấn cho tôi|tư vấn chi tiết|mẫu|về mẫu|xem mẫu|may|kiểu)\s+', '', q_lower).strip()
+    cleaned_q = cleaned_q.strip("'\"()[]")
+
+    is_query_male = any(w in q_lower for w in ["nam", "men", "trai", "ông", "chàng"])
+    is_query_female = any(w in q_lower for w in ["nữ", "women", "gái", "bà", "nàng", "cô", "tiểu thư"])
+
+    best_match = None
+    highest_score = 0
+
+    for p in all_products:
+        p_name = p.name.lower().strip()
+        score = 0
+
+        # 1. Khớp chính xác tên sản phẩm
+        if p_name in q_lower:
+            score += 120
+        elif cleaned_q and cleaned_q == p_name:
+            score += 100
+        elif cleaned_q and (cleaned_q in p_name):
+            score += 70 + len(cleaned_q)
+        elif any(part in p_name for part in cleaned_q.split() if len(part) > 2):
+            score += 30
+
+        # 2. Khớp theo từng từ khóa (token match)
+        q_words = [w for w in re.split(r'[\s,._-]+', q_lower) if len(w) > 1 and w not in ["cho", "tôi", "mình", "tiệm", "muốn", "nhé", "ạ", "chi", "tiết", "về"]]
+        p_words = [w for w in re.split(r'[\s,._-]+', p_name) if len(w) > 1]
+        
+        matched_words_count = sum(1 for w in q_words if w in p_words)
+        if matched_words_count > 0:
+            score += matched_words_count * 20
+
+        # 3. Khớp giới tính (Nam / Nữ)
+        p_gender = (p.target_gender or "").lower()
+        if is_query_male:
+            if "nam" in p_gender or "nam" in p_name:
+                score += 40
+            elif "nữ" in p_gender or "nữ" in p_name:
+                score -= 60
+        elif is_query_female:
+            if "nữ" in p_gender or "nữ" in p_name:
+                score += 40
+            elif "nam" in p_gender or "nam" in p_name:
+                score -= 60
+
+        # 4. Khớp danh mục
+        for cat in (p.categories or []):
+            if cat.lower() in q_lower:
+                score += 25
+
+        if score > highest_score and score >= 45:
+            highest_score = score
+            best_match = p
+
+    return best_match
+
+
 def generate_expert_reply(user_text: str, session: Session) -> str:
     """
     Bộ não tư vấn chuyên gia của Nhà May Thúy Diễm (Rule-based NLP & Knowledge Base).
@@ -155,20 +215,63 @@ def generate_expert_reply(user_text: str, session: Session) -> str:
     # 0. NẾU HỎI VỀ SẢN PHẨM CỤ THỂ TRONG DATABASE (Từ nút "Tư vấn mẫu" hoặc gõ tên)
     # -------------------------------------------------------------------------
     all_products = session.exec(select(Product)).all()
-    for p in all_products:
-        if p.name.lower() in msg or (f"mẫu '{p.name.lower()}'" in msg):
-            fabrics_str = ", ".join(p.fabric_recommendations) if p.fabric_recommendations else "Lụa cao cấp, Tuyết mưa"
-            details_str = "\n".join([f"  • **{k}**: {v}" for k, v in p.design_details.items()]) if p.design_details else ""
-            
-            reply = f"👗 **Tư vấn chi tiết về mẫu: {p.name}**\n\n"
-            reply += f"• **Phong cách & Kiểu dáng**: {p.description}\n"
-            reply += f"• **Dành cho**: {p.target_gender} | Danh mục: {', '.join(p.categories)}\n"
-            reply += f"• **Mức giá may ước tính**: {p.price_estimate}\n"
-            if details_str:
-                reply += f"• **Chi tiết thiết kế phom dáng**:\n{details_str}\n"
-            reply += f"• **Chất liệu vải tối ưu**: {fabrics_str}\n\n"
-            reply += "💡 *Mẹo từ Thợ may*: Bạn có thể yêu cầu may đo chuẩn theo số đo riêng của mình hoặc tùy chỉnh độ dài áo/váy, tay áo, cổ áo theo sở thích nhé! Bạn muốn tiệm tư vấn thêm về chọn vải hay đặt lịch lấy số đo ạ?"
-            return reply
+    matched_product = find_best_matching_product(msg, all_products)
+    
+    if matched_product:
+        p = matched_product
+        # Lọc lấy các thông tin thực tế có trong sản phẩm (không bịa thêm, chỉ nói thông tin có sẵn)
+        desc = p.description.strip() if (p.description and p.description.strip()) else ""
+        gender = p.target_gender.strip() if (p.target_gender and p.target_gender.strip()) else ""
+        categories = [c.strip() for c in (p.categories or []) if c and str(c).strip()]
+        price = p.price_estimate.strip() if (p.price_estimate and p.price_estimate.strip()) else ""
+        
+        valid_details = []
+        if isinstance(p.design_details, dict):
+            for k, v in p.design_details.items():
+                if k and str(k).strip() and v and str(v).strip():
+                    valid_details.append(f"  - **{str(k).strip()}**: {str(v).strip()}")
+        
+        valid_fabrics = [str(f).strip() for f in (p.fabric_recommendations or []) if f and str(f).strip()]
+
+        # 0.1 Nếu khách hỏi riêng về GIÁ của sản phẩm này
+        if any(k in msg for k in ["giá", "nhiêu", "chi phí", "tiền công", "bao nhiêu tiền", "hết bao nhiêu"]):
+            if price:
+                return f"👗 Mức giá may ước tính cho mẫu **{p.name}** là: **{price}**.\n\n*Giá có thể thay đổi tùy theo yêu cầu chất liệu vải và độ tùy biến phom dáng của bạn.*"
+            else:
+                return f"👗 Mẫu **{p.name}** hiện chưa có mức giá cố định trên hệ thống. Bạn có thể gửi số đo hoặc yêu cầu cụ thể để tiệm báo giá may đo chính xác nhất nhé!"
+
+        # 0.2 Nếu khách hỏi riêng về CHẤT LIỆU / VẢI của sản phẩm này
+        if any(k in msg for k in ["vải", "chất liệu", "vải gì", "loại vải"]):
+            if valid_fabrics:
+                return f"🧵 Mẫu **{p.name}** được gợi ý may bằng chất liệu vải: **{', '.join(valid_fabrics)}**.\n\nBạn muốn tiệm cung cấp vải may trọn gói hay tự mang vải tới ạ?"
+            else:
+                return f"🧵 Mẫu **{p.name}** chưa có chỉ định vải cố định trên hệ thống. Bạn có thể tự chọn chất liệu mình thích hoặc tiệm sẽ tư vấn loại vải phù hợp nhất cho kiểu dáng này."
+
+        # 0.3 Trả lời tư vấn tổng quan về mẫu (CHỈ LIỆT KÊ NHỮNG GÌ SẢN PHẨM CÓ)
+        lines = [f"👗 **Tư vấn về mẫu: {p.name}**\n"]
+        
+        if desc:
+            lines.append(f"• **Kiểu dáng & Mô tả**: {desc}")
+        
+        if gender and categories:
+            lines.append(f"• **Dành cho**: {gender} | **Danh mục**: {', '.join(categories)}")
+        elif gender:
+            lines.append(f"• **Dành cho**: {gender}")
+        elif categories:
+            lines.append(f"• **Danh mục**: {', '.join(categories)}")
+        
+        if price:
+            lines.append(f"• **Mức giá may ước tính**: {price}")
+        
+        if valid_details:
+            lines.append("• **Thông số & Chi tiết thiết kế**:\n" + "\n".join(valid_details))
+        
+        if valid_fabrics:
+            lines.append(f"• **Chất liệu vải gợi ý**: {', '.join(valid_fabrics)}")
+        
+        lines.append("\n💡 *Mẹo từ Thợ may*: Bạn có thể may đo theo số đo riêng hoặc tùy chỉnh chi tiết theo sở thích. Bạn muốn tiệm tư vấn thêm điều gì về mẫu này không ạ?")
+        
+        return "\n".join(lines)
 
     # -------------------------------------------------------------------------
     # 1. HỎI VỀ BẢNG GIÁ, CHI PHÍ, TIỀN CÔNG MAY
@@ -213,9 +316,27 @@ def generate_expert_reply(user_text: str, session: Session) -> str:
         return WORKFLOW_GUIDE
 
     # -------------------------------------------------------------------------
-    # 3. HỎI VỀ CÁCH LẤY SỐ ĐO, TỰ ĐO TẠI NHÀ
+    # 3. NGƯỜI DÙNG CUNG CẤP SỐ ĐO HOẶC HỎI CÁCH LẤY SỐ ĐO
     # -------------------------------------------------------------------------
-    if any(k in msg for k in ["số đo", "cách đo", "tự đo", "lấy số đo", "bảng size", "đo tại nhà"]):
+    # 3.1 Nếu người dùng nhập số đo thực tế (có số đo ngực, eo, mông, chiều cao, cân nặng...)
+    has_body_measurements = (
+        bool(re.search(r'\b(ngực|eo|mông|v1|v2|v3|vòng 1|vòng 2|vòng 3|chiều cao|cân nặng|vai|dài áo|dài quần|bắp tay)\b', msg) and re.search(r'\d+', msg))
+        or bool(re.search(r'\b\d+\s*(cm|kg|m\d+)\b', msg))
+        or bool(re.search(r'\b\d{2,3}[-\s/]\d{2,3}[-\s/]\d{2,3}\b', msg))
+    )
+
+    if has_body_measurements:
+        return (
+            "📐 **CẢM ƠN BẠN ĐÃ CUNG CẤP SỐ ĐO!** 🧵\n\n"
+            "Thợ may Nhà May Thúy Diễm đã tiếp nhận thông số đo của bạn. Dựa trên số đo này, tiệm sẽ tính toán tỉ lệ cắt may và độ cử động chuẩn xác nhất để tôn dáng đẹp nhất cho bạn.\n\n"
+            "📲 **THÔNG TIN LIÊN HỆ GỬI DUYỆT PHOM MAY**:\n"
+            f"• **Hotline / Zalo tư vấn**: {STORE_INFO['phone']}\n"
+            f"• **Địa chỉ tiệm**: {STORE_INFO['address']}\n\n"
+            "👉 *Bạn hãy bấm nút **'📲 Gửi Mẫu & Số Đo Qua Zalo'** ngay bên dưới để hệ thống tự động đính kèm thông tin mẫu sản phẩm cùng số đo này gửi trực tiếp cho Thợ may chính của tiệm nhé!*"
+        )
+
+    # 3.2 Nếu hỏi về cách tự lấy số đo tại nhà
+    if any(k in msg for k in ["số đo", "cách đo", "tự đo", "lấy số đo", "bảng size", "đo tại nhà", "hướng dẫn đo"]):
         return MEASUREMENT_GUIDE
 
     # -------------------------------------------------------------------------
@@ -299,7 +420,11 @@ def generate_expert_reply(user_text: str, session: Session) -> str:
     # -------------------------------------------------------------------------
     matched_prods = find_matching_products(user_text, session)
     if matched_prods:
-        p_names = ", ".join([f"**{p.name}** ({p.price_estimate})" for p in matched_prods])
+        p_items = []
+        for p in matched_prods:
+            price_text = f" ({p.price_estimate.strip()})" if (p.price_estimate and p.price_estimate.strip()) else ""
+            p_items.append(f"**{p.name}**{price_text}")
+        p_names = ", ".join(p_items)
         return f"Dạ, về nhu cầu '{user_text}', Nhà May Thúy Diễm có các mẫu thiết kế rất phù hợp như: {p_names}.\n\nBạn có thể cho tiệm biết thêm về chiều cao, cân nặng hoặc dịp mặc (đi tiệc, đi làm, đi chơi) để thợ may tư vấn phom dáng và loại vải tối ưu nhất cho bạn nhé!"
 
     return f"Dạ, Nhà May Thúy Diễm rất hân hạnh được tư vấn cho bạn về '{user_text}' ạ! 🧵\n\nBạn đang quan tâm đến:\n1. **Tư vấn chọn mẫu & kiểu dáng** (Đầm, Áo dài, Sơ mi, Quần tây, Vest...)\n2. **Tư vấn loại vải & màu sắc** theo vóc dáng\n3. **Báo giá may đo & thời gian hoàn thiện**\n4. **Đặt lịch lấy số đo tại tiệm hoặc hướng dẫn tự đo tại nhà**\n\nBạn hãy gửi thêm thông tin để tiệm hỗ trợ chi tiết nhất nhé!"

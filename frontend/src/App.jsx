@@ -82,7 +82,7 @@ export default function App() {
   }, [currentUser, currentView, selectedDetailProduct]);
 
   const handleSelectForConsult = (product) => {
-    setPrefillProduct(product);
+    setPrefillProduct(product ? { ...product, _consultId: Date.now() } : null);
   };
 
   const handleOpenProductDetail = (product) => {
@@ -291,6 +291,7 @@ export default function App() {
         <Chatbox
           currentUser={currentUser}
           prefillMessage={prefillProduct}
+          activeDetailProduct={selectedDetailProduct}
         />
       )}
 
